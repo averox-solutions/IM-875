@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Login.css"; // Ensure this file is properly linked for styling
+import beeplogo from '../../assets/beepLogo.png'
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -40,7 +41,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <img className="bg-logo" src="../../Images/beepLogo.png" alt="bg-img" />
+        <img className="bg-logo" src={beeplogo} alt="bg-img" />
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>

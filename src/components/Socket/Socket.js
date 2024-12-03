@@ -21,8 +21,6 @@ function Socket() {
     const [searchParams, setSearchParams] = useSearchParams();
     const room_id = searchParams.get("room_id")
 
-    console.log(room_id)
-
     // Mock username (you can replace this with actual user data later)
     const USERNAME = 'John Doe';
 
@@ -32,14 +30,12 @@ function Socket() {
         const room_id = queryParams.get('room_id');
 
         // Connection event with user identification
-        socket.on('user_connected', (data) => {
+        socket.on('vc_connected', (data) => {
             setIsConnected(true);
-            setUserId(data.userId);
             console.log('Connected to WebSocket server', {
-                user_id: data.userId,
+                accessToken: accessToken,
                 socket_id: data.socket_id,
                 room_id: room_id,
-                username: USERNAME
             });
         });
 
@@ -47,7 +43,8 @@ function Socket() {
         if (room_id) {
             socket.emit('join_room', {
                 room_id: room_id,
-                username: USERNAME
+                username: USERNAME,
+                accessToken: accessToken,
             });
         }
 
@@ -68,7 +65,7 @@ function Socket() {
 
         // Cleanup on component unmount
         return () => {
-            socket.off('user_connected');
+            socket.off('vc_connected');
             socket.off('disconnect');
             socket.off('message');
         };
