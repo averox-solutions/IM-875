@@ -7,19 +7,23 @@ const AppContext = createContext();
 export default AppContext;
 
 export const Provider = ({ children }) => {
-    let [refreshToken, setRefreshToken] = useState(null);
-    let [accessToken, setAccessToken] = useState(null);
-
     let [loginloader, setLoginloader] = useState(false);
 
     const backendRoot = ''
 
     const navigate = useNavigate();
-    // let [authTokens, setAuthTokens] = useState(() =>
-    //     localStorage.getItem("authTokens")
-    //         ? JSON.parse(localStorage.getItem("authTokens"))
-    //         : null
-    // );
+
+    let [accessToken, setAccessToken] = useState(() =>
+        localStorage.getItem("accessToken")
+            ? localStorage.getItem("accessToken")
+            : null
+    );
+
+    let [refreshToken, setRefreshToken] = useState(() =>
+        localStorage.getItem("refreshToken")
+            ? localStorage.getItem("refreshToken")
+            : null
+    );
 
     let [user, setUser] = useState(() =>
         localStorage.getItem("accessToken")
@@ -78,7 +82,7 @@ export const Provider = ({ children }) => {
     };
 
     useEffect(() => {
-        let minutes = 1000 * 60 * 4;
+        let minutes = 1000 * 60 * 24;
         let interval = setInterval(() => {
             if (accessToken && refreshToken) {
                 updateToken();
