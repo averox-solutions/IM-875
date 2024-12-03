@@ -16,8 +16,8 @@ function App() {
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Home />} />
             <Route path="/vc" element={<VideoCall />} />
-            <Route path="/vc/room" element={<VideoCallRoom />} />
           </Route>
+          <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Provider>
