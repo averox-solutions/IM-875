@@ -7,7 +7,7 @@ const SearchBar = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "30px",
+        padding: "20px",
       }}
     >
       <input

@@ -4,7 +4,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { Provider } from "./components/AppContext";
 import PrivateRoutes from "./PrivateRoutes";
-import VideoCall from "./components/Video Call/VC";
+import VideoCall from "./components/Video Call/VideoCall"
 import VideoCallRoom from "./components/Video Call Room/Room";
 
 
@@ -15,10 +15,12 @@ function App() {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Home />} />
-            <Route path="/vc" element={<VideoCall />} />
+            {/* <Route path="/vc" element={<VideoCall />} /> */}
+            {/* <Route path="/vc/room" element={<VideoCallRoom />} /> */}
           </Route>
           <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/vc" element={<VideoCall />} />
         </Routes>
       </Provider>
     </div>

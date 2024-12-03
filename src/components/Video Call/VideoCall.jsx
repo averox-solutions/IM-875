@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./room.css";
 import SearchBar from "./SearchBar";
 import RoomCard from "./RoomCard";
 
-const RoomNavbar = () => {
+const VideoCall = () => {
+  // State for managing button clicks
+  const [activeTab, setActiveTab] = useState("Rooms");
+  const [roomsData, setRoomsData] = useState([]);
+  const [userData, setUserData] = useState({
+    name: "Administrator",
+    imageUrl: "../../../Images/user.png",
+  });
+
+  // Fetch dynamic data (for example, rooms data)
+  useEffect(() => {
+    // You can replace this with an actual API call to fetch room data
+    const fetchRooms = async () => {
+      const response = await fetch("/api/rooms"); // Example endpoint
+      const data = await response.json();
+      setRoomsData(data);
+    };
+    
+    fetchRooms();
+  }, []);
+
+  // Function to handle tab changes
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div style={{ background: "#f5f5f5", height: "100vh" }}>
       <div className="container">
@@ -27,11 +52,12 @@ const RoomNavbar = () => {
         >
           <div>
             <button
+              onClick={() => handleTabClick("Rooms")}
               style={{
                 padding: "8px 30px",
                 border: "none",
                 borderRadius: "10px",
-                background: "#fff",
+                background: activeTab === "Rooms" ? "#ccc" : "#fff",
                 cursor: "pointer",
               }}
             >
@@ -40,11 +66,12 @@ const RoomNavbar = () => {
           </div>
           <div>
             <button
+              onClick={() => handleTabClick("Recording")}
               style={{
                 padding: "8px 30px",
                 border: "none",
                 borderRadius: "10px",
-                background: "#fff",
+                background: activeTab === "Recording" ? "#ccc" : "#fff",
                 cursor: "pointer",
               }}
             >
@@ -53,9 +80,10 @@ const RoomNavbar = () => {
           </div>
           <div>
             <button
+              onClick={() => handleTabClick("Instant Messaging")}
               style={{
                 padding: "8px 30px",
-                background: "#fff",
+                background: activeTab === "Instant Messaging" ? "#ccc" : "#fff",
                 border: "none",
                 borderRadius: "10px",
                 cursor: "pointer",
@@ -69,23 +97,27 @@ const RoomNavbar = () => {
         <div
           style={{
             display: "flex",
-            justifyContent: "center", // Fixed typo here
+            justifyContent: "center",
             alignItems: "center",
             gap: "20px",
           }}
         >
-          <h3>Administrator</h3>
-          <img src="../../../Images/user.png" alt="user" />
-          {/* You can implement the dropdown logic here if needed */}
+          <h3>{userData.name}</h3>
+          <img src={userData.imageUrl} alt="user" />
           <div className="dropdown">
-            {/* Dropdown button and menu can be activated/removed as per your requirement */}
+            {/* Dropdown menu can be activated here */}
           </div>
         </div>
       </div>
+
       <SearchBar />
-      <RoomCard />
+
+      {/* Conditional rendering of RoomCard component based on active tab */}
+      {activeTab === "Rooms" && <RoomCard rooms={roomsData} />}
+      {activeTab === "Recording" && <div>Recording functionality here</div>}
+      {activeTab === "Instant Messaging" && <div>Instant Messaging functionality here</div>}
     </div>
   );
 };
 
-export default RoomNavbar;
+export default VideoCall;
