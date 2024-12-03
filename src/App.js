@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import { Provider } from "./components/AppContext";
 import PrivateRoutes from "./PrivateRoutes";
 import Socket from "./components/Socket/Socket";
+import VideoCall from "./components/Video Call/VC";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Home />} />
+            <Route path="/vc" element={<VideoCall />} />
           </Route>
 
           <Route path="/login" element={<Login />} />

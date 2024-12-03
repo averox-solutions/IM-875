@@ -1,5 +1,4 @@
 import React from 'react'
-import '../../style.css'
 import { useState, useEffect, useContext, useRef } from "react";
 import AppContext from "../AppContext";
 

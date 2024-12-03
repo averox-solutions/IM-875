@@ -7,19 +7,23 @@ const AppContext = createContext();
 export default AppContext;
 
 export const Provider = ({ children }) => {
+    let [refreshToken, setRefreshToken] = useState(null);
+    let [accessToken, setAccessToken] = useState(null);
+
     let [loginloader, setLoginloader] = useState(false);
+
     const backendRoot = ''
 
     const navigate = useNavigate();
-    let [authTokens, setAuthTokens] = useState(() =>
-        localStorage.getItem("authTokens")
-            ? JSON.parse(localStorage.getItem("authTokens"))
-            : null
-    );
+    // let [authTokens, setAuthTokens] = useState(() =>
+    //     localStorage.getItem("authTokens")
+    //         ? JSON.parse(localStorage.getItem("authTokens"))
+    //         : null
+    // );
 
     let [user, setUser] = useState(() =>
-        localStorage.getItem("authTokens")
-            ? jwtDecode(localStorage.getItem("authTokens"))
+        localStorage.getItem("accessToken")
+            ? jwtDecode(localStorage.getItem("accessToken"))
             : null
     );
 
@@ -42,9 +46,9 @@ export const Provider = ({ children }) => {
 
             if (response.status === 200) {
                 setLoginloader(false);
-                setAuthTokens(data);
-                setUser(jwtDecode(data.access));
-                localStorage.setItem("authTokens", JSON.stringify(data));
+                setAccessToken(data.accessToken);
+                setUser(jwtDecode(data.accessToken));
+                localStorage.setItem("accessToken", JSON.stringify(data));
                 navigate("/");
             } else {
                 setLoginloader(false);
@@ -59,13 +63,14 @@ export const Provider = ({ children }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ refresh: authTokens.refresh }),
+            body: JSON.stringify({ refresh: refreshToken }),
         });
         let data = await response.json();
         if (response.status === 200) {
-            setAuthTokens(data);
-            setUser(jwtDecode(data.access));
-            localStorage.setItem("authTokens", JSON.stringify(data));
+            setAccessToken(data.accessToken);
+            setRefreshToken(data.refreshToken)
+            setUser(jwtDecode(data.accessToken));
+            localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
         } else {
             logoutUser();
             navigate("/login");
@@ -75,15 +80,16 @@ export const Provider = ({ children }) => {
     useEffect(() => {
         let minutes = 1000 * 60 * 4;
         let interval = setInterval(() => {
-            if (authTokens) {
+            if (accessToken && refreshToken) {
                 updateToken();
             }
         }, minutes);
         return () => clearInterval(interval);
-    }, [authTokens]);
+    }, [accessToken]);
 
     let logoutUser = () => {
-        setAuthTokens(null);
+        setAccessToken(null);
+        setRefreshToken(null)
         setUser(null);
         localStorage.removeItem("authTokens");
         alert("Logout Successful");
@@ -94,6 +100,8 @@ export const Provider = ({ children }) => {
         user: user,
         logoutUser: logoutUser,
         loginUser: loginUser,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
     }), [user, loginUser, logoutUser]);
 
     return (
