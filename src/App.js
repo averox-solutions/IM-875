@@ -6,7 +6,7 @@ import { Provider } from "./components/AppContext";
 import PrivateRoutes from "./PrivateRoutes";
 import Socket from "./components/Socket/Socket";
 import VideoCall from "./components/Video Call/VC";
-
+import Rooms from "./components/Rooms/RoomNavbar";
 
 function App() {
   return (
@@ -17,9 +17,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/vc" element={<VideoCall />} />
           </Route>
-
           <Route path="/login" element={<Login />} />
           <Route path="/socket" element={<Socket />} />
+          <Route path="/rooms" element={<Rooms />} />
         </Routes>
       </Provider>
     </div>

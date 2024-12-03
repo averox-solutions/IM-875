@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./Login.css"; // Ensure this file is properly linked for styling
-import beeplogo from '../../assets/beepLogo.png'
+import "./Login.css"; // Ensure this file is properly linked for other styling
+import beeplogo from '../../assets/beepLogo.png';
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +9,6 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Check if the email is saved in localStorage when the component mounts
   useEffect(() => {
     const savedEmail = localStorage.getItem("email");
     if (savedEmail) {
@@ -23,12 +23,15 @@ const Login = () => {
     // Simulate login
     if (email === "admin@example.com" && password === "admin123") {
       alert("Login Successful");
-      // If "Remember Me" is checked, save email to localStorage
+
+  
       if (rememberMe) {
         localStorage.setItem("email", email);
       } else {
         localStorage.removeItem("email");
       }
+
+ 
     } else {
       setErrorMessage("Invalid email or password");
     }
@@ -38,8 +41,20 @@ const Login = () => {
     setRememberMe(e.target.checked);
   };
 
+  // Inline style for background image
+  const backgroundStyle = {
+    backgroundImage: `url(${require('../../assets/bg-image.png')})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
+
   return (
-    <div className="login-container">
+    <div style={backgroundStyle}>
       <div className="login-card">
         <img className="bg-logo" src={beeplogo} alt="bg-img" />
         <form onSubmit={handleSubmit}>

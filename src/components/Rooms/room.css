@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.logo-img {
+  width: 6%;
+}
+.three-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  /* width: 30%; */
+}
