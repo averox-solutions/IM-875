@@ -10,7 +10,6 @@ const socket = io('http://localhost:8080/vc', {
     reconnectionDelay: 1000
 });
 
-
 function Socket() {
     let { user, accessToken } = useContext(AppContext);
     const location = useLocation();
@@ -21,8 +20,22 @@ function Socket() {
     const [searchParams, setSearchParams] = useSearchParams();
     const room_id = searchParams.get("room_id")
 
-    // Mock username (you can replace this with actual user data later)
-    const USERNAME = 'John Doe';
+    // Function to handle leaving the room
+    const handleLeaveRoom = () => {
+        if (room_id) {
+            socket.emit('leave_room', {
+                room_id: room_id,
+                username: user?.username
+            }, (response) => {
+                // Log the callback acknowledgement
+                console.log('You have left the room');
+
+                // Optional: Clear the room_id from URL if needed
+                searchParams.delete('room_id');
+                setSearchParams(searchParams);
+            });
+        }
+    };
 
     useEffect(() => {
         // Extract room_id from URL query parameters
@@ -31,28 +44,30 @@ function Socket() {
 
         // Connection event with user identification
         socket.on('vc_connected', (data) => {
-            setIsConnected(true);
-            console.log('Connected to WebSocket server', {
-                accessToken: accessToken,
-                socket_id: data.socket_id,
-                room_id: room_id,
-            });
+            // console.log('Connected to Voice Chat Server', {
+            //     accessToken: accessToken,
+            //     socket_id: data.socket_id,
+            //     room_id: room_id,
+            // });
         });
 
         // If room_id exists, emit a room join event when connection is established
         if (room_id) {
             socket.emit('join_room', {
                 room_id: room_id,
-                username: USERNAME,
+                username: user?.username,
                 accessToken: accessToken,
+            }, (response) => {
+                // Log the join room callback
+                console.log('You have joined the room');
             });
         }
 
         // Existing event listeners...
         socket.on('disconnect', () => {
-            setIsConnected(false);
-            setUserId(null);
-            console.log('Disconnected from WebSocket server');
+            // setIsConnected(false);
+            // setUserId(null);
+            // console.log('Disconnected from WebSocket server');
         });
 
         socket.on('message', (data) => {
@@ -60,7 +75,11 @@ function Socket() {
         });
 
         socket.on('user_joined', (data) => {
-            console.log('User Joined:', data.username);
+            console.log(data?.username, 'has joined the room');
+        });
+
+        socket.on('user_left', (data) => {
+            console.log(data?.username, 'has left the room');
         });
 
         // Cleanup on component unmount
@@ -68,18 +87,24 @@ function Socket() {
             socket.off('vc_connected');
             socket.off('disconnect');
             socket.off('message');
+            socket.off('user_left');
+            socket.off('user_joined');
+            socket.off('join_room');
         };
     }, [location.search]);
-
-    // Rest of the component remains the same...
 
     return (
         <div>
             {room_id && (
-                <div className="bg-green-100 p-3 rounded mt-4">
+                <div className="bg-green-100 p-3 rounded mt-4 flex justify-between items-center">
                     <p>Connected to Room:
                         <span className="ml-2 font-bold text-green-700">{room_id}</span>
                     </p>
+                    <button
+                        onClick={handleLeaveRoom}
+                    >
+                        Leave Room
+                    </button>
                 </div>
             )}
         </div>
