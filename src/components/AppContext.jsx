@@ -82,7 +82,7 @@ export const Provider = ({ children }) => {
     };
 
     useEffect(() => {
-        let minutes = 1000 * 60 * 24;
+        let minutes = 1000 * 60 * 23;
         let interval = setInterval(() => {
             if (accessToken && refreshToken) {
                 updateToken();
