@@ -4,7 +4,7 @@ import SearchBar from "./SearchBar";
 import RoomCard from "./RoomCard";
 
 const VideoCall = () => {
-  // State for managing button clicks
+  // State for managing button clicks and data
   const [activeTab, setActiveTab] = useState("Rooms");
   const [roomsData, setRoomsData] = useState([]);
   const [userData, setUserData] = useState({
@@ -12,15 +12,29 @@ const VideoCall = () => {
     imageUrl: "../../../Images/user.png",
   });
 
-  // Fetch dynamic data (for example, rooms data)
-  useEffect(() => {
-    // You can replace this with an actual API call to fetch room data
-    const fetchRooms = async () => {
-      const response = await fetch("/api/rooms"); // Example endpoint
+  // Function to fetch data from API
+  const fetchData = async (endpoint) => {
+    try {
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error(`Error fetching data: ${response.statusText}`);
+      }
       const data = await response.json();
+      console.log("Fetched Data:", data); // Log API response to console
+      return data;
+    } catch (error) {
+      console.error("Error:", error.message);
+      return [];
+    }
+  };
+
+  // Fetch rooms data on component mount
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const data = await fetchData("/api/rooms"); // Replace with your API endpoint
       setRoomsData(data);
     };
-    
+
     fetchRooms();
   }, []);
 
@@ -115,7 +129,7 @@ const VideoCall = () => {
       {/* Conditional rendering of RoomCard component based on active tab */}
       {activeTab === "Rooms" && <RoomCard rooms={roomsData} />}
       {activeTab === "Recording" && <div>Recording functionality here</div>}
-      {activeTab === "Instant Messaging" && <div>Instant Messaging functionality here</div>}
+      {activeTab === "Instant Messaging" && <button style={{ border: "none", background: "green", padding: "10px 40px", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}>Instant Messaging</button>}
     </div>
   );
 };
