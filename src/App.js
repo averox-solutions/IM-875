@@ -15,11 +15,10 @@ function App() {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Home />} />
-
+            <Route path="/vc" element={<VideoCall />} />
           </Route>
           <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/vc" element={<VideoCall />} />
         </Routes>
       </Provider>
     </div>
