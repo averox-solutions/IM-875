@@ -36,7 +36,7 @@ export const Provider = ({ children }) => {
         if (loginloader == false) {
             setLoginloader(true);
             e.preventDefault();
-            let response = await fetch(`${backendRoot}/auth/token/`, {
+            let response = await fetch(`${backendRoot}/auth/login/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -51,8 +51,10 @@ export const Provider = ({ children }) => {
             if (response.status === 200) {
                 setLoginloader(false);
                 setAccessToken(data.accessToken);
+                setRefreshToken(data.refreshToken);
                 setUser(jwtDecode(data.accessToken));
-                localStorage.setItem("accessToken", JSON.stringify(data));
+                localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+                localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
                 navigate("/");
             } else {
                 setLoginloader(false);
@@ -67,7 +69,7 @@ export const Provider = ({ children }) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ refresh: refreshToken }),
+            body: JSON.stringify({ refreshToken: refreshToken }),
         });
         let data = await response.json();
         if (response.status === 200) {
@@ -75,6 +77,7 @@ export const Provider = ({ children }) => {
             setRefreshToken(data.refreshToken)
             setUser(jwtDecode(data.accessToken));
             localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+            localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
         } else {
             logoutUser();
             navigate("/login");
