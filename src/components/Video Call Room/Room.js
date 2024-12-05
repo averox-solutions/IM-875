@@ -7,7 +7,7 @@ import Conversation from './Conversation'
 
 
 // Create socket connection outside the component to prevent multiple connections
-const socket = io('http://localhost:8080/vc', {
+const socket = io(`${process.env.REACT_APP_BACKEND_URL}/vc`, {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000
