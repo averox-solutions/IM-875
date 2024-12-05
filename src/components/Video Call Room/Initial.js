@@ -84,8 +84,12 @@ function Initial(props) {
                 const allPeers = []
                 response.existingUsers.forEach((data, index) => {
                     const peer = createPeer(data.socket_id, response.socket_id, localStream);
-                    allPeers.push(peer)
+                    allPeers.push({
+                        peer_id: data.socket_id,
+                        peer
+                    })
                 })
+
                 setPeers(allPeers);
 
                 setHasJoined(true)
@@ -96,14 +100,18 @@ function Initial(props) {
 
 
     function createPeer(socket_id, new_user_socket_id, stream) {
+
         const peer = new Peer({
             initiator: true,
             trickle: false,
             stream
         });
 
+
         peer.on('signal', signal => {
+
             socket.emit('sending_signal', {
+                username: username,
                 socket_id: socket_id,
                 new_user_socket_id: new_user_socket_id,
                 signal: signal

@@ -5,6 +5,7 @@ import AppContext from '../AppContext';
 import Initial from './Initial'
 import Conversation from './Conversation'
 
+
 // Create socket connection outside the component to prevent multiple connections
 const socket = io('http://localhost:8080/vc', {
     reconnection: true,

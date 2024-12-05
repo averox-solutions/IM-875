@@ -128,6 +128,7 @@ import { HiVideoCamera, HiVideoCameraSlash } from "react-icons/hi2";
 import { useLocation, useSearchParams } from 'react-router-dom';
 import AppContext from '../AppContext';
 
+
 function Conversation(props) {
     let { user, accessToken } = useContext(AppContext);
     const location = useLocation();
@@ -215,9 +216,9 @@ function Conversation(props) {
         });
 
         socket.on('user_joined_signal', (data) => {
-            const peer = addPeer(data.signal, data.socket_id, localStream)
+            const peer = addPeer(data.signal, data.new_user_socket_id, localStream)
             setPeers(users => [...users, {
-                peer_id: data.socket_id,
+                peer_id: data.new_user_socket_id,
                 peer
             }]);
 
@@ -403,7 +404,6 @@ function Conversation(props) {
                             gap: '16px'
                         }}>
                             {peers?.map(({ peer, peerID }) => {
-                                console.log(peer)
                                 return (
                                     <RemotePeer key={peerID} peer={peer} />
                                 )
