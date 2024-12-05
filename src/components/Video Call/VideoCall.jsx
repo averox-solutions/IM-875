@@ -124,12 +124,49 @@ const VideoCall = () => {
         </div>
       </div>
 
+      {/* Search Bar */}
       <SearchBar />
 
-      {/* Conditional rendering of RoomCard component based on active tab */}
-      {activeTab === "Rooms" && <RoomCard rooms={roomsData} />}
-      {activeTab === "Recording" && <div>Recording functionality here</div>}
-      {activeTab === "Instant Messaging" && <button style={{ border: "none", background: "green", padding: "10px 40px", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}>Instant Messaging</button>}
+      {/* Apply padding to RoomCard only */}
+      {activeTab === "Rooms" && (
+        <div style={{ padding: "20px" }}>
+          <RoomCard rooms={roomsData} />
+        </div>
+      )}
+
+      {/* Recording tab content */}
+      {activeTab === "Recording" && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#ddd",
+            height: "10vh",
+            textAlign: "center",
+          }}
+        >
+          Recording functionality here
+        </div>
+      )}
+
+      {/* Instant Messaging tab content */}
+      {activeTab === "Instant Messaging" && (
+        <button
+          style={{
+            border: "none",
+            background: "rgb(75, 136, 43)",
+            padding: "10px 40px",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#fff",
+          }}
+        >
+          Instant Messaging
+        </button>
+      )}
     </div>
   );
 };

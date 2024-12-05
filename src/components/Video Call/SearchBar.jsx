@@ -110,9 +110,9 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
           <div
             style={{
               background: "#fff",
-              padding: "20px",
+              padding: "10px",
               borderRadius: "8px",
-              width: "50%",
+              width: "30%",
               display: "flex",
               flexDirection: "column",
             }}
@@ -122,41 +122,50 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
               type="text"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
-              placeholder={t("Enter room name")}
+              placeholder={t("Enter a room name")}
               style={{
                 padding: "10px",
                 marginBottom: "15px",
                 borderRadius: "8px",
                 border: "1px solid #ccc",
-                width: "100%",
+                width: "95%",
               }}
             />
-            <button
-              onClick={handleCreateRoom}
+            <div
               style={{
-                padding: "10px 20px",
-                background: "rgb(75, 136, 43)",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap:"10px"
               }}
             >
-              {t("Create Room")}
-            </button>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              style={{
-                padding: "10px 20px",
-                background: "grey",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                marginTop: "10px",
-              }}
-            >
-              {t("Cancel")}
-            </button>
+             
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  padding: "10px 50px",
+                  background: "#fff",
+                  color: "#000",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                }}
+              >
+                {t("Close")}
+              </button>
+              <button
+                onClick={handleCreateRoom}
+                style={{
+                  padding: "10px 20px",
+                  background: "rgb(75, 136, 43)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: "bold",
+                }}
+              >
+                {t("Create Room")}
+              </button>
+            </div>
           </div>
         </div>
       )}
