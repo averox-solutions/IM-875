@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import io from 'socket.io-client';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import AppContext from '../AppContext';
@@ -16,6 +16,14 @@ function Socket() {
     let { user, accessToken } = useContext(AppContext);
 
     const location = useLocation();
+
+    const localVideoRef = useRef(null);
+    const [localStream, setLocalStream] = useState(null);
+
+    const [isVideoMuted, setIsVideoMuted] = useState(false);
+    const [isAudioMuted, setIsAudioMuted] = useState(false);
+
+    const [peers, setPeers] = useState(null)
 
     const [hasJoined, setHasJoined] = useState(false);
     const [username, setUsername] = useState(user?.username ? user?.username : "");
@@ -43,9 +51,41 @@ function Socket() {
     return (
         <>
             {hasJoined ?
-                <Conversation username={username} setUsername={setUsername} socket={socket} room_id={room_id} hasJoined={hasJoined} setHasJoined={setHasJoined} />
+                <Conversation
+                    localVideoRef={localVideoRef}
+                    localStream={localStream}
+                    setLocalStream={setLocalStream}
+                    peers={peers}
+                    setPeers={setPeers}
+                    username={username}
+                    setUsername={setUsername}
+                    socket={socket}
+                    room_id={room_id}
+                    hasJoined={hasJoined}
+                    setHasJoined={setHasJoined}
+                    isVideoMuted={isVideoMuted}
+                    isAudioMuted={isAudioMuted}
+                    setIsVideoMuted={setIsVideoMuted}
+                    setIsAudioMuted={setIsAudioMuted}
+                />
                 :
-                <Initial username={username} setUsername={setUsername} socket={socket} room_id={room_id} hasJoined={hasJoined} setHasJoined={setHasJoined} />
+                <Initial
+                    localVideoRef={localVideoRef}
+                    localStream={localStream}
+                    setLocalStream={setLocalStream}
+                    peers={peers}
+                    setPeers={setPeers}
+                    username={username}
+                    setUsername={setUsername}
+                    socket={socket}
+                    room_id={room_id}
+                    hasJoined={hasJoined}
+                    setHasJoined={setHasJoined}
+                    isVideoMuted={isVideoMuted}
+                    isAudioMuted={isAudioMuted}
+                    setIsVideoMuted={setIsVideoMuted}
+                    setIsAudioMuted={setIsAudioMuted}
+                />
             }
         </>
     );
