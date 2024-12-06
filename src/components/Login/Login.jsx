@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./Login.css"; // Ensure this file is properly linked for other styling
-import beeplogo from '../../assets/beepLogo.png';
-import AppContext from '../AppContext'; // Import the AppContext
+import beeplogo from "../../assets/beepLogo.png";
+import AppContext from "../AppContext"; // Import the AppContext
 import { useNavigate } from "react-router-dom"; // Import navigate for routing
 
 const Login = () => {
-  const { loginUser, accessToken, loginLoader, refreshToken } = useContext(AppContext); // Access context functions and state
+  const { loginUser, accessToken, loginLoader, refreshToken } =
+    useContext(AppContext); // Access context functions and state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -25,14 +26,14 @@ const Login = () => {
   };
 
   const backgroundStyle = {
-    backgroundImage: `url(${require('../../assets/bg-image.png')})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundImage: `url(${require("../../assets/bg-image.png")})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   };
 
   return (
@@ -43,9 +44,9 @@ const Login = () => {
           <div className="form-group">
             <label>Email</label>
             <input
-            required
+              required
               type="email"
-              name='email'
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
@@ -54,13 +55,12 @@ const Login = () => {
           <div className="form-group">
             <label>Password</label>
             <input
-            required
-            name='password'
+              required
+              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              
             />
           </div>
           <div className="form-group">
@@ -84,7 +84,13 @@ const Login = () => {
           )}
         </form>
         <p>
-          Don’t have an account? <a href="/signup">Sign Up</a>
+          Don’t have an account?{" "}
+          <a
+            href="/signup"
+            style={{ color: "#000", textDecoration: "none ", fontSize: "15px" }}
+          >
+            Sign Up
+          </a>  
         </p>
       </div>
     </div>

@@ -4,7 +4,8 @@ import SearchBar from "./SearchBar";
 import RoomCard from "./RoomCard";
 
 const VideoCall = () => {
-  // State for managing button clicks and data
+  const [searchInput, setSearchInput] = useState("");
+
   const [activeTab, setActiveTab] = useState("Rooms");
   const [roomsData, setRoomsData] = useState([]);
   const [userData, setUserData] = useState({
@@ -12,7 +13,6 @@ const VideoCall = () => {
     imageUrl: "../../../Images/user.png",
   });
 
-  // Function to fetch data from API
   const fetchData = async (endpoint) => {
     try {
       const response = await fetch(endpoint);
@@ -73,6 +73,9 @@ const VideoCall = () => {
                 borderRadius: "10px",
                 background: activeTab === "Rooms" ? "#ccc" : "#fff",
                 cursor: "pointer",
+                outline: "none",
+                transition: "background-color 0.5s ease",
+
               }}
             >
               Rooms
@@ -87,6 +90,7 @@ const VideoCall = () => {
                 borderRadius: "10px",
                 background: activeTab === "Recording" ? "#ccc" : "#fff",
                 cursor: "pointer",
+                outline: "none",
               }}
             >
               Recording
@@ -101,6 +105,7 @@ const VideoCall = () => {
                 border: "none",
                 borderRadius: "10px",
                 cursor: "pointer",
+                outline: "none",
               }}
             >
               Instant Messaging
@@ -117,7 +122,11 @@ const VideoCall = () => {
           }}
         >
           <h3>{userData.name}</h3>
-          <img src={userData.imageUrl} alt="user" />
+          <img
+            style={{ borderRadius: "50px" }}
+            src={userData.imageUrl}
+            alt="user"
+          />
           <div className="dropdown">
             {/* Dropdown menu can be activated here */}
           </div>
@@ -125,11 +134,11 @@ const VideoCall = () => {
       </div>
 
       {/* Search Bar */}
-      <SearchBar />
+      <SearchBar searchInput={searchInput} setSearchInput={setSearchInput} />
 
       {/* Apply padding to RoomCard only */}
       {activeTab === "Rooms" && (
-        <div style={{ padding: "20px" }}>
+        <div style={{ paddingLeft: "20px" }}>
           <RoomCard rooms={roomsData} />
         </div>
       )}

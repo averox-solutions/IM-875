@@ -8,7 +8,7 @@ export default AppContext;
 
 export const Provider = ({ children }) => {
   const [loginLoader, setLoginLoader] = useState(false);
-  const backendRoot = 'https://9880-182-180-55-138.ngrok-free.app'; // Define the backend URL here
+  const backendRoot = 'https://9880-182-180-55-138.ngrok-free.app'; 
   const navigate = useNavigate();
 
   const [accessToken, setAccessToken] = useState(() =>
