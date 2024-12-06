@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.home-header {
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: nowrap;
+}
+.home-logo-div {
+    width: 10%;
+}
+.home-logo{
+    width: 100%;
+}
+.user-logo-div {
+    width: 10%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+.user-logo {
+    width: 40%;
+    border-radius: 88px;
+}
+.user-name-div {
+    color: #11263C;
+    font-size: small;
+    font-weight: 600;
+    font-family: 'Poppins';
+}
+.inner-header-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 75em;
+    align-content: center;
+}
+
+.home-body {
+    display: flex;
+    height: 78vh;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+}
+.logger-noti-div {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    align-content: space-between;
+    flex-wrap: wrap;
+    height: 30px;
+    flex-direction: row;
+}
+.logger-noti {
+    width: 20%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    background: #CEF6DB;
+    border-radius: 6px;
+}
+.nav-buttons {
+    background-color: white;
+    border: none;
+    color: black;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 15px;
+    box-shadow: 0 8px 118px rgba(72, 141, 65, 0.45);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 30%;
+    gap: 25px;
+}
+
+.nav-buttons:hover {
+    transform: scale(0.95);
+}
+
+.button-icon-div {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.button-description {
+    text-align: left;
+}
+
+.button-icon {
+    width: 100%;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.bottom-button {
+    display: flex;
+    justify-content: space-evenly;
+    width: 31%;
+    align-items: center;
+    height: 67px;
+    padding-left: 4%;
+}
+
+
+.heart, .share {
+    background-color: #f5f5f5;
+    width: 33%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 82px;
+    height: 44px;
+    align-content: center;
+}
+
+.title-div {
+    font-family: "Poppins", sans-serif;
+    width: 55%;
+    color: black;
+    font-weight: 500;
+    font-size: larger;
+}
+
+.button-text-container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: flex-start;
+    gap: 5px;
+    justify-content: flex-start;
+}
+
+.text-description-div {
+    gap: 18px;
+    padding-bottom: 0%;
+    width: 80%;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 8%;
+    font-family: 'Poppins';
+    text-align: left;
+    align-content: flex-start;
+    color: #84829A;
+    font-size: smaller;
+}
+
+.home-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: smaller;
+    background: #f5f5f5;
+    margin-top: auto;
+    align-content: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 5vh;
+}
+.user-name-div{
+
+}
+.user-name{
+
+}
+.left-copyright{
+    padding-left: 1%;   
+}
+.inner-div {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    width: 95%;
+}
+
+.url-list {
+    display: flex;
+    gap: 41px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    align-content: center;
+}
+.footer-links {
+    display: flex;
+    width: 20%;
+    flex-direction: row;
+    color: black;
+    text-decoration: none;
+}
+
+/* Media Queries for Responsive Design */
+
+/* Small Devices (phones, less than 768px) */
+@media (max-width: 768px) {
+    .home-logo {
+        width: 15%;
+    }
+
+    .nav-buttons {
+        width: 80%;
+        gap: 15px;
+        box-shadow: 0 4px 60px rgba(72, 141, 65, 0.25);
+    }
+
+    .bottom-button {
+        width: 90%;
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+    .heart, .share {
+        width: 50%;
+    }
+
+    .title-div {
+        width: 90%;
+        font-size: medium;
+    }
+
+    .text-description-div {
+        width: 90%;
+        padding-left: 5%;
+    }
+
+    .home-footer {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .footer-links {
+        width: 50%;
+        justify-content: center;
+    }
+}
+
+/* Medium Devices (tablets, less than 1024px) */
+@media (max-width: 1024px) {
+    .home-logo {
+        width: 12%;
+    }
+
+    .nav-buttons {
+        width: 25%;
+        gap: 20px;
+    }
+
+    .bottom-button {
+        width: 70%;
+    }
+
+    .heart, .share {
+        width: 40%;
+    }
+
+    .title-div {
+        width: 80%;
+        font-size: large;
+    }
+
+    .text-description-div {
+        width: 85%;
+        padding-left: 6%;
+    }
+
+    .home-footer {
+        flex-direction: row;
+        gap: 10vh;
+    }
+}
+
+/* Large Devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+    .nav-buttons {
+        width: 25%;
+    }
+
+    .bottom-button {
+        width: 20%;
+    }
+
+    .title-div {
+        width: 65%;
+    }
+}

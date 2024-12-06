@@ -7,8 +7,9 @@ const AppContext = createContext();
 export default AppContext;
 
 export const Provider = ({ children }) => {
+
+  const REACT_APP_BACKEND_URL="https://1cb9-182-180-55-138.ngrok-free.app";
   const [loginLoader, setLoginLoader] = useState(false);
-  const backendRoot = 'https://9880-182-180-55-138.ngrok-free.app'; // Define the backend URL here
   const navigate = useNavigate();
 
   const [accessToken, setAccessToken] = useState(() =>
@@ -29,7 +30,7 @@ export const Provider = ({ children }) => {
         const password = e.target?.password?.value;
       
         // Proceed with the API call if email and password are available
-        let response = await fetch(`${backendRoot}/auth/login/`, {
+        let response = await fetch(`${REACT_APP_BACKEND_URL}/auth/login/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -59,7 +60,7 @@ export const Provider = ({ children }) => {
 
 
   const updateToken = useCallback(async () => {
-    let response = await fetch(`${backendRoot}/auth/refresh/`, {
+    let response = await fetch(`${REACT_APP_BACKEND_URL}/auth/refresh/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

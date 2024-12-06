@@ -6,6 +6,7 @@ import { Provider } from "./components/AppContext";
 import PrivateRoutes from "./PrivateRoutes";
 import VideoCall from "./components/Video Call/VideoCall"
 import VideoCallRoom from "./components/Video Call Room/Room";
+import Chat from "./components/Chat/Chat";
 
 
 function App() {
@@ -15,7 +16,9 @@ function App() {
         <Routes>
           <Route element={<PrivateRoutes />}>
             <Route path="/" element={<Home />} />
-            <Route path="/vc" element={<VideoCall />} />
+            <Route path="/vc" element={<VideoCall />}/>
+            <Route path="/Chat" element={<Chat/>}/>
+            
           </Route>
           <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />

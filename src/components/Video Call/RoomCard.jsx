@@ -22,7 +22,7 @@ const RoomCard = () => {
         />
         <div style={{ paddingTop: "20px" }}>
           <div style={{ fontWeight: "bold" }}>Ahmer</div>
-          <span>Last Session: Tuesday, December 3, 2024 at 2:36 PM</span>
+          <span>Tuesday, December 3, 2024 at 2:36 PM</span>
         </div>
         <div>
           <svg
@@ -113,7 +113,7 @@ const RoomCard = () => {
       >
         <button
           style={{
-            padding: "10px 40px",
+            padding: "10px 50px",
             border: "none",
             background: "rgb(75, 136, 43)",
             color: "#fff",

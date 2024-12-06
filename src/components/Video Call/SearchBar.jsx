@@ -34,8 +34,8 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
   const handleCreateRoom = () => {
     // Here, you can implement the room creation logic (e.g., call an API)
     console.log("Room Created: ", roomName);
-    setIsModalOpen(false); // Close the modal after room creation
-    setRoomName(""); // Reset room name
+    setIsModalOpen(false);
+    setRoomName("");
   };
 
   return (
@@ -69,10 +69,11 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
           padding: "12px",
           borderRadius: "8px",
           outline: "none",
+          paddingLeft: "50px",
         }}
         type="text"
         name="search"
-        placeholder={t("     Search here ......")}
+        placeholder={t("Search here ......")}
         onChange={debouncedOnChangeHandler}
         onFocus={(e) => (e.target.style.borderColor = "#4B882B")}
         onBlur={(e) => (e.target.style.borderColor = "#4B882B")}
@@ -86,7 +87,10 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
           color: "#fff",
           fontWeight: "bold",
           fontSize: "15px",
+          transition: "background-color 0.5s ease",
         }}
+        onMouseEnter={(e) => (e.target.style.background = "rgb(60, 120, 35)")}
+        onMouseLeave={(e) => (e.target.style.background = "rgb(75, 136, 43)")}
         onClick={handleNewRoomClick}
       >
         {t("New Room")}
@@ -136,10 +140,9 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
                 display: "flex",
                 justifyContent: "flex-end",
                 alignItems: "center",
-                gap:"10px"
+                gap: "10px",
               }}
             >
-             
               <button
                 onClick={() => setIsModalOpen(false)}
                 style={{
