@@ -50,7 +50,7 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
       <svg
         style={{
           position: "absolute",
-          top: "130px",
+          top: "100px",
           left: "25px",
           height: "24px",
           width: "24px",
@@ -133,6 +133,7 @@ const SearchBar = ({ searchInput, setSearchInput }) => {
                 borderRadius: "8px",
                 border: "1px solid #ccc",
                 width: "95%",
+                outline: "none",
               }}
             />
             <div

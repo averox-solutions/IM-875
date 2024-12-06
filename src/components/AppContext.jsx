@@ -5,10 +5,9 @@ import { useNavigate } from "react-router-dom";
 const AppContext = createContext();
 
 export default AppContext;
-
 export const Provider = ({ children }) => {
   const [loginLoader, setLoginLoader] = useState(false);
-  const backendRoot = 'https://9880-182-180-55-138.ngrok-free.app'; 
+  const backendRoot = 'https://1cb9-182-180-55-138.ngrok-free.app'; 
   const navigate = useNavigate();
 
   const [accessToken, setAccessToken] = useState(() =>
