@@ -170,6 +170,17 @@ function Conversation(props) {
 
     // Function to handle leaving the room
     const handleLeaveRoom = () => {
+        // Destroy all peer connections
+        peers.forEach(({ peer }) => {
+            if (peer) {
+                try {
+                    peer.destroy();
+                } catch (error) {
+                    console.error('Error destroying peer:', error);
+                }
+            }
+        });
+
         if (room_id) {
             socket.emit('leave_room', {
                 room_id: room_id,
@@ -177,8 +188,15 @@ function Conversation(props) {
             }, (response) => {
                 // Log the callback acknowledgement
                 console.log('You have left the room');
+                setPeers([]); // Clear peers
                 setHasJoined(false)
             });
+        }
+
+        // Stop local stream tracks
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
         }
     };
 
@@ -244,6 +262,23 @@ function Conversation(props) {
         });
 
         socket.on('user_left', (data) => {
+            // Remove the peer when a user leaves
+            setPeers(currentPeers => {
+                const updatedPeers = currentPeers.filter(p => p.peer_id !== data.socket_id);
+
+                // Destroy the specific peer connection
+                const removedPeer = currentPeers.find(p => p.peer_id === data.socket_id);
+                if (removedPeer && removedPeer.peer) {
+                    try {
+                        removedPeer.peer.destroy();
+                    } catch (error) {
+                        console.error('Error destroying peer:', error);
+                    }
+                }
+
+                return updatedPeers;
+            });
+
             console.log(data?.username, 'has left the room');
         });
 
@@ -253,6 +288,25 @@ function Conversation(props) {
             socket.off('receive_message');
             socket.off('user_joined');
             socket.off('user_left');
+            socket.off('user_joined_signal');
+            socket.off('receiving_returned_signal');
+
+            // Destroy all peer connections
+            peers.forEach(({ peer }) => {
+                if (peer) {
+                    try {
+                        peer.destroy();
+                    } catch (error) {
+                        console.error('Error destroying peer:', error);
+                    }
+                }
+            });
+
+            // Stop local stream tracks
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                setLocalStream(null);
+            }
         };
     }, [location.search]);
 
@@ -286,6 +340,14 @@ function Conversation(props) {
                 new_user_socket_id: new_user_socket_id,
                 signal: signal
             });
+        });
+
+        peer.on('error', (err) => {
+            console.error('Peer connection error:', err);
+            // Remove the peer from the list on error
+            setPeers(currentPeers =>
+                currentPeers.filter(p => p.peer_id !== new_user_socket_id)
+            );
         });
 
         peer.signal(incomingSignal)
@@ -405,7 +467,7 @@ function Conversation(props) {
                         }}>
                             {peers?.map(({ peer, peerID }) => {
                                 return (
-                                    <RemotePeer key={peerID} peer={peer} />
+                                    <RemotePeer peerID={peerID} key={peerID} peer={peer} />
                                 )
                             })}
                         </div>
@@ -421,8 +483,18 @@ export default Conversation;
 
 
 
-function RemotePeer({ peer }) {
+function RemotePeer({ peer, peerID }) {
     const remoteVideoRef = useRef(null);
+
+    // useEffect(() => {
+    //     if (peer) {
+    //         peer.on('stream', stream => {
+    //             if (remoteVideoRef.current) {
+    //                 remoteVideoRef.current.srcObject = stream;
+    //             }
+    //         });
+    //     }
+    // }, [peer]);
 
     useEffect(() => {
         if (peer) {
@@ -431,11 +503,15 @@ function RemotePeer({ peer }) {
                     remoteVideoRef.current.srcObject = stream;
                 }
             });
+
+            peer.on('error', (err) => {
+                console.error(`Peer connection error for peer ${peerID}:`, err);
+            });
         }
-    }, [peer]);
+    }, [peer, peerID]);
 
     return (
-        <div style={{
+        <div key={peerID} style={{
             width: '256px',
             height: '192px',
             backgroundColor: '#E5E7EB',
