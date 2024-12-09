@@ -8,7 +8,7 @@ const AppContext = createContext();
 export default AppContext;
 
 export const Provider = ({ children }) => {
-  const REACT_APP_BACKEND_URL = "http://localhost:8000";
+  const REACT_APP_BACKEND_URL = process.env.Backend_link
   const [loginLoader, setLoginLoader] = useState(false);
   const navigate = useNavigate();
 
