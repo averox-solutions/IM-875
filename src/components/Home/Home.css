@@ -8,30 +8,37 @@
     align-content: center;
     flex-wrap: nowrap;
 }
+
 .home-logo-div {
     width: 10%;
 }
-.home-logo{
+
+.home-logo {
     width: 100%;
 }
+
 .user-logo-div {
     width: 10%;
     display: flex;
-    flex-direction: column;
-    align-content: center;
+    flex-direction: row-reverse;
+    align-content: flex-start;
     align-items: center;
     justify-content: center;
+    gap: 8px;
 }
-.user-logo {
-    width: 40%;
-    border-radius: 88px;
-}
+
 .user-name-div {
     color: #11263C;
-    font-size: small;
+    font-size: 1em;
     font-weight: 600;
     font-family: 'Poppins';
 }
+
+.user-logo {
+    width: 35%;
+    border-radius: 88px;
+}
+
 .inner-header-div {
     display: flex;
     align-items: center;
@@ -42,14 +49,16 @@
 
 .home-body {
     display: flex;
-    height: 78vh;
+    height: 83vh;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
     align-items: center;
     gap: 100px;
+    /* background-image: url("../../assets/bgp.webp"); */
 }
+
 .logger-noti-div {
     display: flex;
     align-items: stretch;
@@ -59,6 +68,7 @@
     height: 30px;
     flex-direction: row;
 }
+
 .logger-noti {
     width: 20%;
     height: 30px;
@@ -69,6 +79,7 @@
     background: #CEF6DB;
     border-radius: 6px;
 }
+
 .nav-buttons {
     background-color: white;
     border: none;
@@ -77,18 +88,113 @@
     font-size: 16px;
     cursor: pointer;
     border-radius: 15px;
-    box-shadow: 0 8px 118px rgba(72, 141, 65, 0.45);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 18px rgba(72, 141, 65, 0.45);
+    transition: all 1200ms ease;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: 30%;
+    width: 25%;
     gap: 25px;
 }
 
+/* Hover Effect */
 .nav-buttons:hover {
-    transform: scale(0.95);
+    transform: scale(1.2);
+    /* Scale up similar to #animated-cards */
+    transition: all 1200ms ease;
+    /* Smooth transition */
+    z-index: 99;
+    /* Brings the element to the front */
+    background-color: #fed136;
+    /* Change background color on hover */
+    box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
+    /* Glow effect */
 }
+
+.nav-buttons:hover {
+    transform: scale(1.2);
+    /* Scale up similar to #animated-cards */
+    transition: all 1200ms ease;
+    /* Smooth transition */
+    z-index: 99;
+    /* Brings the element to the front */
+    background-color: rgb(183, 247, 229);
+    /* Change background color on hover */
+    box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
+    /* Glow effect */
+}
+
+/* Service Icon Animation for Nav Buttons (if applicable) */
+.nav-buttons .service-icon {
+    font-size: 30px;
+    color: black;
+    opacity: 0.4;
+    transition: all 1200ms ease;
+}
+
+.nav-buttons:hover .service-icon {
+    transform: translateX(10px) translateY(10px) scale(1.3);
+    /* Translate and scale effect */
+    transition: all 1200ms ease;
+}
+
+.nav-buttons-im {
+    background-color: white;
+    border: none;
+    color: black;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 15px;
+    box-shadow: 0 8px 18px rgba(72, 141, 65, 0.45);
+    transition: all 1200ms ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 25%;
+    gap: 25px;
+}
+
+/* Hover Effect */
+.nav-buttons-im:hover {
+    transform: scale(1.2);
+    /* Scale up similar to #animated-cards */
+    transition: all 1200ms ease;
+    /* Smooth transition */
+    z-index: 99;
+    /* Brings the element to the front */
+    background-color: #fed136;
+    /* Change background color on hover */
+    box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
+    /* Glow effect */
+}
+
+.nav-buttons-im:hover {
+    transform: scale(1.2);
+    /* Scale up similar to #animated-cards */
+    transition: all 1200ms ease;
+    /* Smooth transition */
+    z-index: 99;
+    /* Brings the element to the front */
+    background-color: rgb(183, 247, 229);
+    /* Change background color on hover */
+    box-shadow: 2px 2px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Service Icon Animation for Nav Buttons (if applicable) */
+.nav-buttons-im .service-icon {
+    font-size: 30px;
+    color: black;
+    opacity: 0.4;
+    transition: all 1200ms ease;
+}
+
+.nav-buttons-im:hover .service-icon {
+    transform: translateX(10px) translateY(10px) scale(1.3);
+    /* Translate and scale effect */
+    transition: all 1200ms ease;
+}
+
 
 .button-icon-div {
     width: 100%;
@@ -118,7 +224,8 @@
 }
 
 
-.heart, .share {
+.heart,
+.share {
     background-color: #f5f5f5;
     width: 33%;
     border: none;
@@ -176,16 +283,18 @@
     flex-wrap: nowrap;
     width: 100%;
     height: 5vh;
+    position: absolute;
+    bottom: 0;
 }
-.user-name-div{
 
-}
-.user-name{
+.user-name-div {}
 
+.user-name {}
+
+.left-copyright {
+    padding-left: 1%;
 }
-.left-copyright{
-    padding-left: 1%;   
-}
+
 .inner-div {
     display: flex;
     justify-content: space-between;
@@ -202,6 +311,7 @@
     width: 100%;
     align-content: center;
 }
+
 .footer-links {
     display: flex;
     width: 20%;
@@ -231,7 +341,8 @@
         padding: 10px;
     }
 
-    .heart, .share {
+    .heart,
+    .share {
         width: 50%;
     }
 
@@ -271,7 +382,8 @@
         width: 70%;
     }
 
-    .heart, .share {
+    .heart,
+    .share {
         width: 40%;
     }
 
@@ -303,5 +415,69 @@
 
     .title-div {
         width: 65%;
+    }
+}
+
+.user-name-typing {
+    overflow: hidden;
+    /* Hides overflowing text during animation */
+    border-right: 0.15em solid rgb(0, 209, 0);
+    /* Typewriter cursor */
+    white-space: nowrap;
+    /* Keeps content on a single line */
+    margin: 0 auto;
+    /* Center alignment */
+    letter-spacing: 0.15em;
+    /* Adds spacing between letters */
+    animation:
+        typing 3.5s steps(40, end),
+        blink-caret 0.75s step-end infinite;
+    position: fixed;
+    /* Fixed at the top of the viewport */
+    top: 20px;
+    /* Vertical positioning */
+    left: 50%;
+    /* Horizontal centering */
+    transform: translateX(-50%);
+    /* Correct centering adjustment */
+    font-size: 24px;
+    /* Font size for text */
+    font-family: 'Courier New', Courier, monospace;
+    /* Typewriter font style */
+    color: #fff;
+    /* Text color */
+    z-index: 9999;
+    /* Ensures text is above other elements */
+    background: linear-gradient(90deg, #ffe259, #ffa751);
+    /* Gradient text background */
+    padding: 5px 10px;
+    /* Adds padding for text area */
+    border-radius: 5px;
+    /* Smooth corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    /* Shadow for depth */
+}
+
+/* Typing effect animation */
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+/* Blinking caret animation */
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: rgb(0, 209, 0);
     }
 }

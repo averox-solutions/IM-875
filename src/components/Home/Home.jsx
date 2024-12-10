@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+// import axios from "axios";
 import AppContext from '../AppContext';
 import "./Home.css";
 
@@ -21,7 +21,7 @@ export default function Home() {
     // Fetch user data
     const fetchUserData = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/im/user-data`, {
+            const response = await fetch(`${process.env.REACT_APP_REST_URL}/im/user-data`, {
                 headers: {
                     Accept: "application/json",
                     Authorization: `Bearer ${accessToken}`,
@@ -58,12 +58,12 @@ export default function Home() {
                         <img className='home-logo' src="./images/beep.svg" alt="" />
                     </div>
                     <div className='user-logo-div'>
-                    <img
-                        className="user-logo"
-                        src={user?.profilePicture || 'https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0='}
-                        alt="User Avatar"
-                    />
-                         <div className='user-name-div'>
+                        <img
+                            className="user-logo"
+                            src={user?.profilePicture || 'https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0='}
+                            alt="User Avatar"
+                        />
+                        <div className='user-name-div'>
                             <span className="user-name">{user?.name || 'Guest'}</span>
                         </div>
                     </div>

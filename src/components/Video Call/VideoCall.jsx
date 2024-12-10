@@ -59,7 +59,7 @@ const VideoCall = () => {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/vc/get-all-rooms`, {
+      const res = await fetch(`${process.env.REACT_APP_REST_URL}/vc/get-all-rooms`, {
         method: "GET",
         headers: {
           "ngrok-skip-browser-warning": "true",

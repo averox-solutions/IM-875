@@ -4,7 +4,6 @@ import { FaSearch } from "react-icons/fa";
 import Chatsection from "./Chatsection";
 import AppContext from "../AppContext";
 
-
 const Chat = () => {
   const { fetchChatrooms, chatrooms, chatroomsError, messages } =
     useContext(AppContext);

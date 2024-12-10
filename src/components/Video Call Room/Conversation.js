@@ -240,7 +240,8 @@ function Conversation(props) {
             {room_id && (
                 <>
 
-                    {peers &&
+                    {
+                        peers &&
                         < VideoConference
                             room_id={room_id}
                             username={username}
@@ -280,7 +281,6 @@ function Conversation(props) {
                         alignItems: 'center',
                         gap: '16px'
                     }}>
-
                         <div style={{
                             position: 'relative',
                             width: '256px',
@@ -314,7 +314,6 @@ function Conversation(props) {
                                 </div>
                             )}
                         </div>
-
 
                         <div style={{
                             display: 'flex',
@@ -365,10 +364,11 @@ function Conversation(props) {
                                 )
                             })}
                         </div>
-                    </div> */}
+                    </div > */
+                    }
                 </>
             )}
-        </div>
+        </div >
     );
 }
 

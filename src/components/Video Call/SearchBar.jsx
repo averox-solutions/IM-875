@@ -3,27 +3,30 @@ import PropTypes from "prop-types";
 import debounce from "lodash.debounce";
 import { useTranslation } from "react-i18next";
 
-export default function SearchBar({ searchInput, setSearchInput, isLoading, setIsLoading, setRooms, rooms }) {
+export default function SearchBar({
+  searchInput,
+  setSearchInput,
+  isLoading,
+  setIsLoading,
+  setRooms,
+  rooms,
+}) {
   const { t } = useTranslation();
 
-  // State for modal visibility, room name, and fetched rooms
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [roomName, setRoomName] = useState("");
   const [filteredRooms, setFilteredRooms] = useState([]);
 
-  // Handle changes in the search input
   const onChangeHandler = (event) => {
     const value = event.target.value;
     setSearchInput(value);
 
-    // Filter rooms based on search input
     const filtered = rooms.filter((room) =>
       room.name.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredRooms(filtered);
   };
 
-  // Debounce the search input handler
   const debouncedOnChangeHandler = useMemo(
     () => debounce(onChangeHandler, 300),
     [rooms]
@@ -35,7 +38,6 @@ export default function SearchBar({ searchInput, setSearchInput, isLoading, setI
     };
   }, [debouncedOnChangeHandler]);
 
-  // Handle the creation of a new room
   const handleCreateRoom = async () => {
     if (!roomName.trim()) {
       alert(t("Room name cannot be empty"));
@@ -49,10 +51,10 @@ export default function SearchBar({ searchInput, setSearchInput, isLoading, setI
 
     const accessToken = localStorage.getItem("accessToken");
 
-      if (!accessToken) {
-        console.error("Access token not found in localStorage");
-        return;
-      }
+    if (!accessToken) {
+      console.error("Access token not found in localStorage");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:8000/vc/create-room", {
@@ -62,7 +64,7 @@ export default function SearchBar({ searchInput, setSearchInput, isLoading, setI
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
-          name:roomName
+          name: roomName,
         }),
       });
 
@@ -72,7 +74,6 @@ export default function SearchBar({ searchInput, setSearchInput, isLoading, setI
 
       const createdRoom = await response.json();
 
-      // Add the new room to the state
       setRooms(createdRoom.userRooms.reverse());
       setIsModalOpen(false);
       setRoomName("");
@@ -151,20 +152,19 @@ export default function SearchBar({ searchInput, setSearchInput, isLoading, setI
       </div>
 
       {isLoading ? (
-  <div>{t("Loading...")}</div>
-) : (
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-      gap: "20px",
-      marginTop: "20px",
-      width: "100%",
-      maxWidth: "900px",
-    }}
-  >
-  </div>
-)}
+        <div>{t("Loading...")}</div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "20px",
+            marginTop: "20px",
+            width: "100%",
+            maxWidth: "900px",
+          }}
+        ></div>
+      )}
 
       {isModalOpen && (
         <div
