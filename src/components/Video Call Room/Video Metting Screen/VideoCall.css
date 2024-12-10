@@ -1,0 +1,46 @@
+.video-call {
+  display: flex;
+  text-align: center;
+}
+
+.video-tile {
+  display: flex;
+  align-items: center;
+}
+
+.video {
+  padding: 10px;
+  width: 100%;
+  border-radius: 30px;
+}
+.mic {
+  position: absolute;
+  right: 15px;
+  top: 30px;
+}
+.mute-button {
+  position: relative;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.chat-participants {
+  margin: 20px;
+}
+
+.chat-box,
+.participants-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  height: 300px;
+  overflow-y: auto;
+}
+
+.chat-box .messages {
+  margin-bottom: 20px;
+}

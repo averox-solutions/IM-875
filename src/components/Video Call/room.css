@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+}
+
+.logo-img {
+  width: 6%;
+ 
+}
+.three-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  /* width: 30%; */
+}
