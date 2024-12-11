@@ -49,7 +49,7 @@ export const Provider = ({ children }) => {
         setUser(jwtDecode(data.accessToken));
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("refreshToken", data.refreshToken);
-        connectSocket(data.accessToken); // Connect socket on login
+        // connectSocket(data.accessToken); // Connect socket on login
         navigate("/");
       } else {
         setLoginLoader(false);
@@ -130,32 +130,32 @@ export const Provider = ({ children }) => {
   }, [accessToken]);
 
   // Connect to WebSocket
-  const connectSocket = (token) => {
-    const socketInstance = io(`${REACT_APP_BACKEND_URL}/im`, {
-      query: { token },
-    });
+  // const connectSocket = (token) => {
+  //   const socketInstance = io(`${REACT_APP_BACKEND_URL}/im`, {
+  //     query: { token },
+  //   });
 
-    socketInstance.on("connect", () => {
-      console.log("Connected to WebSocket server.");
-    });
+  //   socketInstance.on("connect", () => {
+  //     console.log("Connected to WebSocket server.");
+  //   });
 
-    socketInstance.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [message.chatroomId]: [...(prevMessages[message.chatroomId] || []), message],
-      }));
-    });
+  //   socketInstance.on("receiveMessage", (message) => {
+  //     setMessages((prevMessages) => ({
+  //       ...prevMessages,
+  //       [message.chatroomId]: [...(prevMessages[message.chatroomId] || []), message],
+  //     }));
+  //   });
 
-    socketInstance.on("disconnect", (reason) => {
-      console.log("Disconnected from WebSocket server:", reason);
-    });
+  //   socketInstance.on("disconnect", (reason) => {
+  //     console.log("Disconnected from WebSocket server:", reason);
+  //   });
 
-    setSocket(socketInstance);
-  };
+  //   setSocket(socketInstance);
+  // };
 
   useEffect(() => {
     if (accessToken) {
-      connectSocket(accessToken);
+      // connectSocket(accessToken);
     }
     return () => {
       if (socket) {

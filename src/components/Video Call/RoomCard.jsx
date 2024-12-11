@@ -130,7 +130,7 @@ const RoomCard = (props) => {
                     }}
                     onClick={() =>
                       navigate(
-                        `/vc/room?id=${room.connection_string}`
+                        `/vc/room?room_id=${room.connection_string}`
                       )
                     }
                   >

@@ -35,7 +35,7 @@ function Socket() {
 
     useEffect(() => {
         socket.on('vc_connected', (data) => {
-
+            console.log('connecttttt')
         });
 
         socket.on('disconnect', () => {
