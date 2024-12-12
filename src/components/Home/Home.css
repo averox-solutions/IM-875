@@ -56,7 +56,7 @@
     justify-content: center;
     align-items: center;
     gap: 100px;
-    /* background-image: url("../../assets/bgp.webp"); */
+    background-image: url("../../assets/bgp.webp");
 }
 
 .logger-noti-div {
@@ -420,42 +420,43 @@
 
 .user-name-typing {
     overflow: hidden;
-    /* Hides overflowing text during animation */
     border-right: 0.15em solid rgb(0, 209, 0);
-    /* Typewriter cursor */
     white-space: nowrap;
-    /* Keeps content on a single line */
     margin: 0 auto;
-    /* Center alignment */
     letter-spacing: 0.15em;
-    /* Adds spacing between letters */
-    animation:
-        typing 3.5s steps(40, end),
+    animation: typing 3.5s steps(40, end),
         blink-caret 0.75s step-end infinite;
     position: fixed;
-    /* Fixed at the top of the viewport */
-    top: 20px;
-    /* Vertical positioning */
+    top: 100px;
     left: 50%;
-    /* Horizontal centering */
     transform: translateX(-50%);
-    /* Correct centering adjustment */
     font-size: 24px;
-    /* Font size for text */
     font-family: 'Courier New', Courier, monospace;
-    /* Typewriter font style */
-    color: #fff;
-    /* Text color */
+    color: black;
     z-index: 9999;
-    /* Ensures text is above other elements */
-    background: linear-gradient(90deg, #ffe259, #ffa751);
-    /* Gradient text background */
+    background: white;
     padding: 5px 10px;
-    /* Adds padding for text area */
     border-radius: 5px;
-    /* Smooth corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    /* Shadow for depth */
+}
+.title-div {
+    font-family: "Poppins", sans-serif;
+    width: 100% !important;
+    color: black;
+    font-weight: 500;
+    font-size: larger;
+    display: flex;
+    align-content: center;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    /* width: 100%; */
+}
+.user-name {
+    display: flex;
+    font-size: 20px;
+    font-family: 'Poppins';
+    font-weight: 500;
 }
 
 /* Typing effect animation */
@@ -465,7 +466,7 @@
     }
 
     to {
-        width: 100%;
+        width: 19%;
     }
 }
 
@@ -477,7 +478,7 @@
         border-color: transparent;
     }
 
-    50% {
+    20% {
         border-color: rgb(0, 209, 0);
     }
 }

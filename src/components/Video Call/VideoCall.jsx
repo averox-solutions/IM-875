@@ -153,7 +153,7 @@ const VideoCall = () => {
             </button>
             <button
               onClick={() => {
-                window.location.href = "https://wa.beep.gov.pk/#/login";
+                window.location.href = "/chat";
               }}
               style={{
                 padding: "8px 30px",
