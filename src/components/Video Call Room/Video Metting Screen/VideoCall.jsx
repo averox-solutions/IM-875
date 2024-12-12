@@ -170,7 +170,7 @@ import {
   Chat,
   CallEnd,
 } from "@mui/icons-material";
-import "./VideoCall.css";
+import "./style.css";
 import Image1 from "./images/Image1.png";
 import Image2 from "./images/Image2.png";
 import Image3 from "./images/Image3.png";
@@ -235,72 +235,46 @@ const VideoCall = (props) => {
 
   return (
     <div
-      className="video-call"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100%",
-        overflow: "hidden",
-        paddingTop: "100px",
-        padding: "20px"
-      }}
+      className="vc_participants_master"
     >
-
-      <div style={{
-        width: "100%",
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "10px"
-      }}>
-        <div
+      <div
+        className="vc_participants_item"
+      >
+        <span className="vc_participants_ite_loader"></span>
+        <video
+          className="vc_participants_ite_vid"
+          ref={localVideoRef}
+          autoPlay
+          muted
           style={{
-            width: "100%",
-            aspectRatio: "1/1",
-            background: "orange",
-            height: 'auto',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            borderRadius: "10px",
-            overflow: "hidden"
+            width: '100%',
+            height: "100%",
+            objectFit: 'cover',
+            transform: 'scaleX(-1)'
           }}
-        >
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            style={{
-              width: '100%',
-              height: "100%",
-              objectFit: 'cover',
-              transform: 'scaleX(-1)'
-            }}
-          />
-          {isVideoMuted && (
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundColor: '#6B7280',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white'
-            }}>
-              Video Muted
-            </div>
-          )}
-        </div>
-
-        {peers?.map(({ peer, peerID }) => {
-          return (
-            <RemotePeer peerID={peerID} key={peerID} peer={peer} />
-          )
-        })}
-
+        />
+        {isVideoMuted && (
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: '#6B7280',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white'
+          }}>
+            Video Muted
+          </div>
+        )}
       </div>
+
+      {peers?.map(({ peer, peerID }) => {
+        return (
+          <RemotePeer peerID={peerID} key={peerID} peer={peer} />
+        )
+      })}
+
+
 
       {/* <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(4,1fr)", height: "100%", background: "red" }}>
         <div style={{ width: "100%", aspectRatio: "1/1", background: "blue", height: 'auto' }}>
@@ -425,16 +399,6 @@ export default VideoCall;
 function RemotePeer({ peer, peerID }) {
   const remoteVideoRef = useRef(null);
 
-  // useEffect(() => {
-  //     if (peer) {
-  //         peer.on('stream', stream => {
-  //             if (remoteVideoRef.current) {
-  //                 remoteVideoRef.current.srcObject = stream;
-  //             }
-  //         });
-  //     }
-  // }, [peer]);
-
   useEffect(() => {
     if (peer) {
 
@@ -444,29 +408,19 @@ function RemotePeer({ peer, peerID }) {
         }
       });
 
-      // peer?.on('error', (err) => {
-      //   console.error(`Peer connection error for peer ${peerID}:`, err);
-      // });
+      peer?.on('error', (err) => {
+        console.error(`Peer connection error for peer ${peerID}:`, err);
+      });
     }
   }, [peer, peerID]);
 
   return (
     <div
-      style={{
-        width: "100%",
-        aspectRatio: "1/1",
-        background: "orange",
-        height: 'auto',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-        fontWeight: 'bold',
-        borderRadius: "10px",
-        overflow: "hidden"
-      }}
+      className="vc_participants_item"
     >
+      <span className="vc_participants_ite_loader"></span>
       <video
+        className="vc_participants_ite_vid"
         ref={remoteVideoRef}
         autoPlay
         muted
@@ -491,24 +445,5 @@ function RemotePeer({ peer, peerID }) {
       </div> */}
       {/* )} */}
     </div>
-
-
-    // <div key={peerID} style={{
-    //   width: '256px',
-    //   height: '192px',
-    //   backgroundColor: '#E5E7EB',
-    //   borderRadius: '8px',
-    //   overflow: 'hidden'
-    // }}>
-    //   <video
-    //     ref={remoteVideoRef}
-    //     autoPlay
-    //     style={{
-    //       width: '100%',
-    //       height: '100%',
-    //       objectFit: 'cover'
-    //     }}
-    //   />
-    // </div>
   );
 }

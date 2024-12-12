@@ -10,6 +10,7 @@ import Chat from "./components/Chat/Chat";
 // import VideoConference from "./components/Video Metting Screen/VideoConference";
 // import BeepVideoCall from "./components/Video Metting Screen/BeepVideoCall";
 import Profile from "./components/Video Call/Profile";
+import './style.css'
 
 
 function App() {

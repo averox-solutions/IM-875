@@ -28,24 +28,84 @@ function Conversation(props) {
         localVideoRef,
         localStream,
         setLocalStream,
+        messageList,
+        setMessageList
     } = props;
+    const [userMessage, setUserMessage] = useState('')
+
+    // const sendMessage = async (e) => {
+    //     e.preventDefault()
+
+    //     const item = userMessage.trim()
+    //     setUserMessage('')
+
+    //     console.log(`${username}:`, item)
+
+    //     if (room_id) {
+    //         socket.emit('send_message', {
+    //             room_id: room_id,
+    //             message: item,
+    //             username: username,
+    //             accessToken: accessToken
+    //         }, (response) => {
+
+    //         });
+    //     }
+    // }
 
     const sendMessage = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        console.log(`${username}:`, e.target.user_message.value.trim())
+        const item = userMessage.trim();
+        if (!item) return; // Avoid sending empty messages
 
+        // Reset the user input
+        setUserMessage('');
+
+        // Get the current time in Pakistan Standard Time
+        const timeFormatter = new Intl.DateTimeFormat('en-PK', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+            timeZone: 'Asia/Karachi'
+        });
+        const currentTime = timeFormatter.format(new Date());
+
+        // Create the payload
+        const messagePayload = {
+            time: currentTime,
+            message: item,
+            username: username
+        };
+
+        // Update the local message list
+        setMessageList((prevMessages) => {
+            const updatedMessages = [...prevMessages, messagePayload];
+
+            // Scroll after messages have been updated
+            setTimeout(() => {
+                const objDiv = document.getElementById("chat_and_participants_body_msg_wrapper");
+                if (objDiv && objDiv.scrollHeight) {
+                    objDiv.scrollTop = objDiv.scrollHeight;
+                }
+            }, 0);
+
+            return updatedMessages;
+        });
+
+        // Emit the message to the server if room_id exists
         if (room_id) {
             socket.emit('send_message', {
                 room_id: room_id,
-                message: e.target.user_message.value.trim(),
+                message: item,
                 username: username,
                 accessToken: accessToken
             }, (response) => {
-
+                // Handle response if needed
             });
         }
-    }
+    };
+
 
     // Function to handle leaving the room
     const handleLeaveRoom = () => {
@@ -109,7 +169,23 @@ function Conversation(props) {
         const queryParams = new URLSearchParams(location.search);
 
         socket.on('receive_message', (data) => {
-            console.log(`${data.username}:`, data.message);
+            const timeFormatter = new Intl.DateTimeFormat('en-PK', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true,
+                timeZone: 'Asia/Karachi'
+            });
+            const currentTime = timeFormatter.format(new Date());
+
+            // Create the payload
+            const messagePayload = {
+                time: currentTime,
+                message: data.message,
+                username: data.username
+            };
+
+            // Update the local message list
+            setMessageList((prevMessages) => [...prevMessages, messagePayload]);
         });
 
         socket.on('user_joined_signal', (data) => {
@@ -253,6 +329,10 @@ function Conversation(props) {
                             toggleAudioMute={toggleAudioMute}
                             peers={peers}
                             handleLeaveRoom={handleLeaveRoom}
+                            messageList={messageList}
+                            setMessageList={setMessageList}
+                            userMessage={userMessage}
+                            setUserMessage={setUserMessage}
                         />
                     }
 
