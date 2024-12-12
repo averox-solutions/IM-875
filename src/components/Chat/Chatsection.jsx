@@ -459,7 +459,7 @@ const ChatSection = () => {
                 ref={chatRef}
                 onScroll={handleScroll}
                 style={{
-                    maxHeight: '572px',
+                    maxHeight: '602px',
                     overflowY: 'auto', // Enable scrolling only when necessary
                     backgroundColor: 'cornsilk', // Soft off-white background
                     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth

@@ -57,7 +57,7 @@ export default function SearchBar({
     }
 
     try {
-      const response = await fetch("http://localhost:8000/vc/create-room", {
+      const response = await fetch(`${process.env.REACT_APP_REST_URL}/vc/create-room`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
