@@ -25,6 +25,8 @@ function Initial(props) {
         localVideoRef,
         localStream,
         setLocalStream,
+        messageList,
+        setMessageList
     } = props;
 
     // Get user media on component mount

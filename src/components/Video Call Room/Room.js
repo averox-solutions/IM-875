@@ -16,6 +16,8 @@ const socket = io(`${process.env.REACT_APP_SOCKET_URL}/vc`, {
 function Socket() {
     let { user, accessToken } = useContext(AppContext);
 
+    const [messageList, setMessageList] = useState([])
+
     const location = useLocation();
 
     const localVideoRef = useRef(null);
@@ -68,6 +70,8 @@ function Socket() {
                     isAudioMuted={isAudioMuted}
                     setIsVideoMuted={setIsVideoMuted}
                     setIsAudioMuted={setIsAudioMuted}
+                    messageList={messageList}
+                    setMessageList={setMessageList}
                 />
                 :
                 <Initial
@@ -86,6 +90,8 @@ function Socket() {
                     isAudioMuted={isAudioMuted}
                     setIsVideoMuted={setIsVideoMuted}
                     setIsAudioMuted={setIsAudioMuted}
+                    messageList={messageList}
+                    setMessageList={setMessageList}
                 />
             }
         </>
