@@ -6,6 +6,13 @@ import { IoIosCopy, IoMdSend } from "react-icons/io";
 import BeepLogo from '../../../assets/Beep.svg'
 import ChatCloud from '../../../assets/chat-cloud.svg'
 import { BsThreeDots } from "react-icons/bs";
+import { IoMdMic, IoMdMicOff } from "react-icons/io";
+import { ImPhoneHangUp } from "react-icons/im";
+import { HiVideoCamera, HiVideoCameraSlash } from "react-icons/hi2";
+import { LuScreenShare, LuScreenShareOff } from "react-icons/lu";
+import { PiRecordLight, PiRecordFill } from "react-icons/pi";
+import { IoHandRightOutline, IoHandRightSharp, IoSettingsSharp } from "react-icons/io5";
+import { BiSolidBellRing } from "react-icons/bi";
 
 
 const VideoConference = (props) => {
@@ -18,12 +25,25 @@ const VideoConference = (props) => {
     sendMessage,
     toggleVideoMute,
     toggleAudioMute,
+    toggleScreenRecording,
+    setScreenShare,
+    screenShare,
     peers,
     handleLeaveRoom,
     messageList,
     setMessageList,
     userMessage,
-    setUserMessage
+    setUserMessage,
+    screenRecording,
+    setScreenRecording,
+    handRaise,
+    setHandRaise,
+    toggleHandRaise,
+    inMeetingNotification,
+    setInMeetingNotification,
+    handRaiseList,
+    setHandRaiseList,
+    handleHandRaise,
   } = props
 
   const [isSearchListVisible, setIsSearchListVisible] = useState(false);
@@ -98,6 +118,10 @@ const VideoConference = (props) => {
     setVideoOff(!videoOff);
   };
 
+  const toggleScreenShare = () => {
+    setScreenShare(!screenShare);
+  };
+
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -129,6 +153,26 @@ const VideoConference = (props) => {
         }}>
           <IoIosCopy id='vc_head_copy_icon' />
         </div>
+
+
+
+        {handRaiseList?.length > 0 &&
+          <div className="vc_participants_moda_master">
+            {inMeetingNotification.trim() !== '' && <div className="vc_participants_modal">
+              <BiSolidBellRing className="vc_participants_moda_icon" />
+              <span className="vc_participants_moda_span">{inMeetingNotification}</span>
+            </div>
+            }
+            {handRaiseList.map((data, index) => {
+              return (
+                <div key={index} className="vc_participants_modal">
+                  <IoHandRightSharp className="vc_participants_moda_hand" />
+                  <span className="vc_participants_moda_span">{data.username} has raised their hand</span>
+                </div>
+              )
+            })}
+          </div>
+        }
 
         {/* <div className="use-avater">
           {isSearchListVisible && (
@@ -197,6 +241,78 @@ const VideoConference = (props) => {
             </div>
           </div>
         )} */}
+      </div>
+
+      <div className="vc_participant_controls">
+        <div className="vc_participant_control_child">
+          <button
+            // style={screenRecording ? { background: "rgb(230,230,230)" } : {}}
+            onClick={toggleScreenRecording}
+            className="vc_participant_control_btns"
+          >
+            {/* PiRecordLight, PiRecordFill */}
+            {screenRecording ?
+              <PiRecordFill style={screenRecording ? { color: "rgb(230, 0, 0)" } : {}} className="vc_participant_control_btn_icon" />
+              :
+              <PiRecordFill className="vc_participant_control_btn_icon" />
+            }
+          </button>
+
+          <button
+            onClick={toggleVideoMute}
+            className="vc_participant_control_btns"
+          >
+            {isVideoMuted ?
+              <HiVideoCameraSlash className="vc_participant_control_btn_icon" />
+              :
+              <HiVideoCamera className="vc_participant_control_btn_icon" />
+            }
+          </button>
+          <button
+            onClick={toggleAudioMute}
+            className="vc_participant_control_btns"
+          >
+            {isAudioMuted ?
+              <IoMdMicOff className="vc_participant_control_btn_icon" />
+              :
+              <IoMdMic className="vc_participant_control_btn_icon" />
+            }
+          </button>
+
+          <button
+            style={screenShare ? { background: "rgb(230,230,230)" } : {}}
+            onClick={toggleScreenShare}
+            className="vc_participant_control_btns"
+          >
+            {screenShare ?
+              <LuScreenShareOff style={screenShare ? { color: "rgb(40,40,40)" } : {}} className="vc_participant_control_btn_icon" />
+              :
+              <LuScreenShare className="vc_participant_control_btn_icon" />
+            }
+          </button>
+
+          <button
+            style={handRaise ? { background: "rgb(230,230,230)" } : {}}
+            onClick={toggleHandRaise}
+            className="vc_participant_control_btns"
+          >
+            {handRaise ?
+              <IoHandRightSharp style={handRaise ? { color: "rgb(40,40,40)" } : {}} className="vc_participant_control_btn_icon" />
+              :
+              <IoHandRightOutline className="vc_participant_control_btn_icon" />
+            }
+          </button>
+
+          <button
+            className="vc_participant_control_btns"
+          >
+            <BsThreeDots className="vc_participant_control_btn_icon" />
+          </button>
+
+          <button style={{ background: "rgb(230,0,0)" }} className="vc_participant_control_btns" onClick={handleLeaveRoom}>
+            <ImPhoneHangUp style={{ color: "white" }} className="vc_participant_control_btn_icon" />
+          </button>
+        </div>
       </div>
 
       <VideoCall

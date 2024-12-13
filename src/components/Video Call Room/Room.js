@@ -18,12 +18,19 @@ function Socket() {
 
     const [messageList, setMessageList] = useState([])
 
+    const [inMeetingNotification, setInMeetingNotification] = useState('')
+
     const location = useLocation();
 
     const localVideoRef = useRef(null);
     const [localStream, setLocalStream] = useState(null);
 
     const [isVideoMuted, setIsVideoMuted] = useState(false);
+    const [screenShare, setScreenShare] = useState(false);
+    const [screenRecording, setScreenRecording] = useState(false);
+
+    const [handRaise, setHandRaise] = useState(false);
+
     const [isAudioMuted, setIsAudioMuted] = useState(false);
 
     const [peers, setPeers] = useState(null)
@@ -72,6 +79,14 @@ function Socket() {
                     setIsAudioMuted={setIsAudioMuted}
                     messageList={messageList}
                     setMessageList={setMessageList}
+                    setScreenShare={setScreenShare}
+                    screenShare={screenShare}
+                    setScreenRecording={setScreenRecording}
+                    screenRecording={screenRecording}
+                    handRaise={handRaise}
+                    setHandRaise={setHandRaise}
+                    inMeetingNotification={inMeetingNotification}
+                    setInMeetingNotification={setInMeetingNotification}
                 />
                 :
                 <Initial

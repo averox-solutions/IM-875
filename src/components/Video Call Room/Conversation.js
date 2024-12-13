@@ -29,9 +29,21 @@ function Conversation(props) {
         localStream,
         setLocalStream,
         messageList,
-        setMessageList
+        setMessageList,
+        setScreenShare,
+        screenShare,
+        screenRecording,
+        setScreenRecording,
+        handRaise,
+        setHandRaise,
+        inMeetingNotification,
+        setInMeetingNotification,
     } = props;
     const [userMessage, setUserMessage] = useState('')
+    const notificationTimeoutRef = useRef(null);
+
+    const [handRaiseList, setHandRaiseList] = useState([{ username: "xyz" }])
+
 
     // const sendMessage = async (e) => {
     //     e.preventDefault()
@@ -139,6 +151,10 @@ function Conversation(props) {
         }
     };
 
+    const handleHandRaise = () => {
+
+    }
+
     // Get local media stream
     const getMediaStream = async () => {
         try {
@@ -195,12 +211,22 @@ function Conversation(props) {
                 username: data.username,
                 peer
             }]);
-
-            console.log(data?.username, 'has joined the room');
         });
 
         socket.on('user_joined', (data) => {
-            // console.log(data?.username, 'has joined the room');
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
+            // Set notification with the username who joined
+            setInMeetingNotification(`${data?.username || 'A participant'} has joined the room`);
+
+            // Set a new timeout to clear the notification
+            notificationTimeoutRef.current = setTimeout(() => {
+                setInMeetingNotification('');
+                // Clear the ref after timeout
+                notificationTimeoutRef.current = null;
+            }, 3000);
         });
 
         socket.on('receiving_returned_signal', (data) => {
@@ -235,7 +261,19 @@ function Conversation(props) {
                 return updatedPeers;
             });
 
-            console.log(data?.username, 'has left the room');
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
+            // Set notification with the username who left
+            setInMeetingNotification(`${data?.username || 'A participant'} has left the room`);
+
+            // Set a new timeout to clear the notification
+            notificationTimeoutRef.current = setTimeout(() => {
+                setInMeetingNotification('');
+                // Clear the ref after timeout
+                notificationTimeoutRef.current = null;
+            }, 3000);
         });
 
 
@@ -258,6 +296,10 @@ function Conversation(props) {
                 }
             });
 
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
             // Stop local stream tracks
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
@@ -265,6 +307,17 @@ function Conversation(props) {
             }
         };
     }, [location.search]);
+
+
+    // Toggle video mute
+    const toggleHandRaise = () => {
+        setHandRaise(!handRaise)
+    };
+
+    // Toggle video mute
+    const toggleScreenRecording = () => {
+        setScreenRecording(!screenRecording)
+    };
 
     // Toggle video mute
     const toggleVideoMute = () => {
@@ -333,6 +386,19 @@ function Conversation(props) {
                             setMessageList={setMessageList}
                             userMessage={userMessage}
                             setUserMessage={setUserMessage}
+                            setScreenShare={setScreenShare}
+                            screenShare={screenShare}
+                            toggleScreenRecording={toggleScreenRecording}
+                            setScreenRecording={setScreenRecording}
+                            screenRecording={screenRecording}
+                            handRaise={handRaise}
+                            setHandRaise={setHandRaise}
+                            toggleHandRaise={toggleHandRaise}
+                            inMeetingNotification={inMeetingNotification}
+                            setInMeetingNotification={setInMeetingNotification}
+                            handRaiseList={handRaiseList}
+                            setHandRaiseList={setHandRaiseList}
+                            handleHandRaise={handleHandRaise}
                         />
                     }
 
