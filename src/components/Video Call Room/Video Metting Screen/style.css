@@ -746,6 +746,7 @@
     min-height: calc(100% - 56px);
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    padding-bottom: 86px;
 }
 
 .vc_participants_master:has(.vc_participants_item:nth-child(1):last-child) {

@@ -42,7 +42,7 @@ function Conversation(props) {
     const [userMessage, setUserMessage] = useState('')
     const notificationTimeoutRef = useRef(null);
 
-    const [handRaiseList, setHandRaiseList] = useState([{ username: "xyz" }])
+    const [handRaiseList, setHandRaiseList] = useState([])
 
 
     // const sendMessage = async (e) => {
@@ -152,7 +152,46 @@ function Conversation(props) {
     };
 
     const handleHandRaise = () => {
+        if (handRaise) {
+            setHandRaise(false)
 
+            const updatedHandRaises = handRaiseList.filter(h => h.socket_id !== socket.id);
+
+            console.log(updatedHandRaises)
+
+            setHandRaiseList(updatedHandRaises);
+
+            socket.emit('lower_hand_raise', {
+                room_id: room_id,
+                username: username,
+                accessToken: accessToken,
+            }, (response) => {
+
+            });
+        }
+        else {
+            setHandRaise(true)
+
+            // Instead of mutating the existing array, create a new one
+            const updatedHandRaises = [
+                ...handRaiseList,
+                {
+                    username: username,
+                    socket_id: socket.id
+                }
+            ];
+
+            console.log(updatedHandRaises)
+            setHandRaiseList(updatedHandRaises);
+
+            socket.emit('hand_raise', {
+                room_id: room_id,
+                username: username,
+                accessToken: accessToken,
+            }, (response) => {
+
+            });
+        }
     }
 
     // Get local media stream
@@ -202,6 +241,77 @@ function Conversation(props) {
 
             // Update the local message list
             setMessageList((prevMessages) => [...prevMessages, messagePayload]);
+        });
+
+        // socket.on('receive_hand_raise', (data) => {
+        //     console.log('previous list', handRaiseList)
+
+        //     const payload = {
+        //         username: data.username,
+        //         socket_id: data.socket_id,
+        //     };
+
+        //     console.log('payload', payload)
+
+        //     // Use Set to ensure unique socket_ids
+        //     const uniqueHandRaises = Array.from(
+        //         new Set([...handRaiseList.map(item => item.socket_id), payload.socket_id])
+        //     ).map(socket_id =>
+        //         handRaiseList.find(item => item.socket_id === socket_id) || payload
+        //     );
+
+        //     console.log('uniqueHandRaises', uniqueHandRaises)
+
+        //     setHandRaiseList(uniqueHandRaises)
+        // });
+        socket.on('receive_hand_raise', (data) => {
+            console.log('previous list', handRaiseList)
+
+            const payload = {
+                username: data.username,
+                socket_id: data.socket_id,
+            };
+
+            console.log('payload', payload)
+
+            // Use Set to ensure unique socket_ids, but preserve existing entries
+            const uniqueHandRaises = Array.from(
+                new Set([
+                    ...handRaiseList.map(item => item.socket_id),
+                    payload.socket_id
+                ])
+            ).map(socket_id =>
+                handRaiseList.find(item => item.socket_id === socket_id) || payload
+            );
+
+            console.log('uniqueHandRaises', uniqueHandRaises)
+
+            setHandRaiseList(prevList => {
+                // Check if the new socket_id is already in the list
+                const isNewEntry = !prevList.some(item => item.socket_id === payload.socket_id);
+
+                // If it's a new entry, append it
+                if (isNewEntry) {
+                    return [...prevList, payload];
+                }
+
+                // If it's already in the list, return the previous list
+                return prevList;
+            });
+        });
+
+        socket.on('receive_lower_hand_raise', (data) => {
+            console.log('Current handRaiseList before lowering', handRaiseList)
+            console.log('Lowered hand details', data)
+
+            setHandRaiseList(prevList => {
+                // Filter out only the specific socket_id
+                const updatedHandRaises = prevList.filter(h => h.socket_id !== data.socket_id);
+
+                console.log('Updated handRaiseList after lowering', updatedHandRaises)
+
+                return updatedHandRaises;
+            });
         });
 
         socket.on('user_joined_signal', (data) => {

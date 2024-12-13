@@ -156,23 +156,23 @@ const VideoConference = (props) => {
 
 
 
-        {handRaiseList?.length > 0 &&
-          <div className="vc_participants_moda_master">
-            {inMeetingNotification.trim() !== '' && <div className="vc_participants_modal">
-              <BiSolidBellRing className="vc_participants_moda_icon" />
-              <span className="vc_participants_moda_span">{inMeetingNotification}</span>
-            </div>
-            }
-            {handRaiseList.map((data, index) => {
-              return (
-                <div key={index} className="vc_participants_modal">
-                  <IoHandRightSharp className="vc_participants_moda_hand" />
-                  <span className="vc_participants_moda_span">{data.username} has raised their hand</span>
-                </div>
-              )
-            })}
+        {/* {handRaiseList?.length > 0 && */}
+        <div className="vc_participants_moda_master">
+          {inMeetingNotification.trim() !== '' && <div className="vc_participants_modal">
+            <BiSolidBellRing className="vc_participants_moda_icon" />
+            <span className="vc_participants_moda_span">{inMeetingNotification}</span>
           </div>
-        }
+          }
+          {handRaiseList.map((data, index) => {
+            return (
+              <div key={index} className="vc_participants_modal">
+                <IoHandRightSharp className="vc_participants_moda_hand" />
+                <span className="vc_participants_moda_span">{data.username} has raised their hand</span>
+              </div>
+            )
+          })}
+        </div>
+        {/* } */}
 
         {/* <div className="use-avater">
           {isSearchListVisible && (
@@ -293,7 +293,7 @@ const VideoConference = (props) => {
 
           <button
             style={handRaise ? { background: "rgb(230,230,230)" } : {}}
-            onClick={toggleHandRaise}
+            onClick={handleHandRaise}
             className="vc_participant_control_btns"
           >
             {handRaise ?
