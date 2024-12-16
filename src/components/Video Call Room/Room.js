@@ -16,6 +16,8 @@ const socket = io(`${process.env.REACT_APP_SOCKET_URL}/vc`, {
 function Socket() {
     let { user, accessToken } = useContext(AppContext);
 
+    const [isHost, setIsHost] = useState(false);
+
     const [messageList, setMessageList] = useState([])
 
     const [inMeetingNotification, setInMeetingNotification] = useState('')
@@ -87,6 +89,8 @@ function Socket() {
                     setHandRaise={setHandRaise}
                     inMeetingNotification={inMeetingNotification}
                     setInMeetingNotification={setInMeetingNotification}
+                    setIsHost={setIsHost}
+                    isHost={isHost}
                 />
                 :
                 <Initial
@@ -107,6 +111,8 @@ function Socket() {
                     setIsAudioMuted={setIsAudioMuted}
                     messageList={messageList}
                     setMessageList={setMessageList}
+                    setIsHost={setIsHost}
+                    isHost={isHost}
                 />
             }
         </>

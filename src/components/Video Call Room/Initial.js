@@ -26,7 +26,9 @@ function Initial(props) {
         localStream,
         setLocalStream,
         messageList,
-        setMessageList
+        setMessageList,
+        setIsHost,
+        isHost
     } = props;
 
     // Get user media on component mount
@@ -83,6 +85,8 @@ function Initial(props) {
                 username: e.target.user_message.value.trim(),
                 accessToken: accessToken,
             }, (response) => {
+                console.log(response.is_host)
+                setIsHost(response.is_host)
                 const allPeers = []
                 response.existingUsers.forEach((data, index) => {
                     const peer = createPeer(data.socket_id, response.socket_id, localStream);

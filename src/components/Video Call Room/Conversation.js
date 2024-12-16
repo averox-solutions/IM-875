@@ -38,6 +38,8 @@ function Conversation(props) {
         setHandRaise,
         inMeetingNotification,
         setInMeetingNotification,
+        setIsHost,
+        isHost
     } = props;
     const [userMessage, setUserMessage] = useState('')
     const notificationTimeoutRef = useRef(null);
@@ -509,6 +511,8 @@ function Conversation(props) {
                             handRaiseList={handRaiseList}
                             setHandRaiseList={setHandRaiseList}
                             handleHandRaise={handleHandRaise}
+                            setIsHost={setIsHost}
+                            isHost={isHost}
                         />
                     }
 

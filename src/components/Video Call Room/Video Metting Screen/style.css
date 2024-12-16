@@ -1095,7 +1095,7 @@
     color: white;
     padding: 4px 7px;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 99999;
+    z-index: 100;
     font-weight: normal;
     border-bottom-left-radius: 10px;
 }

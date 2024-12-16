@@ -44,6 +44,8 @@ const VideoConference = (props) => {
     handRaiseList,
     setHandRaiseList,
     handleHandRaise,
+    isHost,
+    setIsHost
   } = props
 
   const [isSearchListVisible, setIsSearchListVisible] = useState(false);
@@ -489,12 +491,12 @@ const VideoConference = (props) => {
                     <span>
                       {data.username}
                     </span>
-                    <div onClick={() => {
+                    {isHost && <div onClick={() => {
                       setActivePopupIndex(activePopupIndex === index ? null : index);
                     }} className="chat_participants_body_item_ico_master">
                       < BsThreeDots className="chat_participants_body_item_ico_child" />
-                    </div>
-                    {activePopupIndex === index &&
+                    </div>}
+                    {activePopupIndex === index && isHost &&
                       <div className='chat_participants_body_ite_popup'>
                         <div className="chat_participants_body_ite_popu_item">
                           Mute Microphone
