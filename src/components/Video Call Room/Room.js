@@ -16,7 +16,11 @@ const socket = io(`${process.env.REACT_APP_SOCKET_URL}/vc`, {
 function Socket() {
     let { user, accessToken } = useContext(AppContext);
 
+    const [isHost, setIsHost] = useState(false);
+
     const [messageList, setMessageList] = useState([])
+
+    const [inMeetingNotification, setInMeetingNotification] = useState('')
 
     const location = useLocation();
 
@@ -24,6 +28,11 @@ function Socket() {
     const [localStream, setLocalStream] = useState(null);
 
     const [isVideoMuted, setIsVideoMuted] = useState(false);
+    const [screenShare, setScreenShare] = useState(false);
+    const [screenRecording, setScreenRecording] = useState(false);
+
+    const [handRaise, setHandRaise] = useState(false);
+
     const [isAudioMuted, setIsAudioMuted] = useState(false);
 
     const [peers, setPeers] = useState(null)
@@ -72,6 +81,16 @@ function Socket() {
                     setIsAudioMuted={setIsAudioMuted}
                     messageList={messageList}
                     setMessageList={setMessageList}
+                    setScreenShare={setScreenShare}
+                    screenShare={screenShare}
+                    setScreenRecording={setScreenRecording}
+                    screenRecording={screenRecording}
+                    handRaise={handRaise}
+                    setHandRaise={setHandRaise}
+                    inMeetingNotification={inMeetingNotification}
+                    setInMeetingNotification={setInMeetingNotification}
+                    setIsHost={setIsHost}
+                    isHost={isHost}
                 />
                 :
                 <Initial
@@ -92,6 +111,8 @@ function Socket() {
                     setIsAudioMuted={setIsAudioMuted}
                     messageList={messageList}
                     setMessageList={setMessageList}
+                    setIsHost={setIsHost}
+                    isHost={isHost}
                 />
             }
         </>

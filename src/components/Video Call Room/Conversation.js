@@ -29,9 +29,23 @@ function Conversation(props) {
         localStream,
         setLocalStream,
         messageList,
-        setMessageList
+        setMessageList,
+        setScreenShare,
+        screenShare,
+        screenRecording,
+        setScreenRecording,
+        handRaise,
+        setHandRaise,
+        inMeetingNotification,
+        setInMeetingNotification,
+        setIsHost,
+        isHost
     } = props;
     const [userMessage, setUserMessage] = useState('')
+    const notificationTimeoutRef = useRef(null);
+
+    const [handRaiseList, setHandRaiseList] = useState([])
+
 
     // const sendMessage = async (e) => {
     //     e.preventDefault()
@@ -139,6 +153,49 @@ function Conversation(props) {
         }
     };
 
+    const handleHandRaise = () => {
+        if (handRaise) {
+            setHandRaise(false)
+
+            const updatedHandRaises = handRaiseList.filter(h => h.socket_id !== socket.id);
+
+            console.log(updatedHandRaises)
+
+            setHandRaiseList(updatedHandRaises);
+
+            socket.emit('lower_hand_raise', {
+                room_id: room_id,
+                username: username,
+                accessToken: accessToken,
+            }, (response) => {
+
+            });
+        }
+        else {
+            setHandRaise(true)
+
+            // Instead of mutating the existing array, create a new one
+            const updatedHandRaises = [
+                ...handRaiseList,
+                {
+                    username: username,
+                    socket_id: socket.id
+                }
+            ];
+
+            console.log(updatedHandRaises)
+            setHandRaiseList(updatedHandRaises);
+
+            socket.emit('hand_raise', {
+                room_id: room_id,
+                username: username,
+                accessToken: accessToken,
+            }, (response) => {
+
+            });
+        }
+    }
+
     // Get local media stream
     const getMediaStream = async () => {
         try {
@@ -188,6 +245,77 @@ function Conversation(props) {
             setMessageList((prevMessages) => [...prevMessages, messagePayload]);
         });
 
+        // socket.on('receive_hand_raise', (data) => {
+        //     console.log('previous list', handRaiseList)
+
+        //     const payload = {
+        //         username: data.username,
+        //         socket_id: data.socket_id,
+        //     };
+
+        //     console.log('payload', payload)
+
+        //     // Use Set to ensure unique socket_ids
+        //     const uniqueHandRaises = Array.from(
+        //         new Set([...handRaiseList.map(item => item.socket_id), payload.socket_id])
+        //     ).map(socket_id =>
+        //         handRaiseList.find(item => item.socket_id === socket_id) || payload
+        //     );
+
+        //     console.log('uniqueHandRaises', uniqueHandRaises)
+
+        //     setHandRaiseList(uniqueHandRaises)
+        // });
+        socket.on('receive_hand_raise', (data) => {
+            console.log('previous list', handRaiseList)
+
+            const payload = {
+                username: data.username,
+                socket_id: data.socket_id,
+            };
+
+            console.log('payload', payload)
+
+            // Use Set to ensure unique socket_ids, but preserve existing entries
+            const uniqueHandRaises = Array.from(
+                new Set([
+                    ...handRaiseList.map(item => item.socket_id),
+                    payload.socket_id
+                ])
+            ).map(socket_id =>
+                handRaiseList.find(item => item.socket_id === socket_id) || payload
+            );
+
+            console.log('uniqueHandRaises', uniqueHandRaises)
+
+            setHandRaiseList(prevList => {
+                // Check if the new socket_id is already in the list
+                const isNewEntry = !prevList.some(item => item.socket_id === payload.socket_id);
+
+                // If it's a new entry, append it
+                if (isNewEntry) {
+                    return [...prevList, payload];
+                }
+
+                // If it's already in the list, return the previous list
+                return prevList;
+            });
+        });
+
+        socket.on('receive_lower_hand_raise', (data) => {
+            console.log('Current handRaiseList before lowering', handRaiseList)
+            console.log('Lowered hand details', data)
+
+            setHandRaiseList(prevList => {
+                // Filter out only the specific socket_id
+                const updatedHandRaises = prevList.filter(h => h.socket_id !== data.socket_id);
+
+                console.log('Updated handRaiseList after lowering', updatedHandRaises)
+
+                return updatedHandRaises;
+            });
+        });
+
         socket.on('user_joined_signal', (data) => {
             const peer = addPeer(data.signal, data.new_user_socket_id, localStream)
             setPeers(users => [...users, {
@@ -195,12 +323,22 @@ function Conversation(props) {
                 username: data.username,
                 peer
             }]);
-
-            console.log(data?.username, 'has joined the room');
         });
 
         socket.on('user_joined', (data) => {
-            // console.log(data?.username, 'has joined the room');
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
+            // Set notification with the username who joined
+            setInMeetingNotification(`${data?.username || 'A participant'} has joined the room`);
+
+            // Set a new timeout to clear the notification
+            notificationTimeoutRef.current = setTimeout(() => {
+                setInMeetingNotification('');
+                // Clear the ref after timeout
+                notificationTimeoutRef.current = null;
+            }, 3000);
         });
 
         socket.on('receiving_returned_signal', (data) => {
@@ -235,7 +373,19 @@ function Conversation(props) {
                 return updatedPeers;
             });
 
-            console.log(data?.username, 'has left the room');
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
+            // Set notification with the username who left
+            setInMeetingNotification(`${data?.username || 'A participant'} has left the room`);
+
+            // Set a new timeout to clear the notification
+            notificationTimeoutRef.current = setTimeout(() => {
+                setInMeetingNotification('');
+                // Clear the ref after timeout
+                notificationTimeoutRef.current = null;
+            }, 3000);
         });
 
 
@@ -258,6 +408,10 @@ function Conversation(props) {
                 }
             });
 
+            if (notificationTimeoutRef.current) {
+                clearTimeout(notificationTimeoutRef.current);
+            }
+
             // Stop local stream tracks
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
@@ -265,6 +419,17 @@ function Conversation(props) {
             }
         };
     }, [location.search]);
+
+
+    // Toggle video mute
+    const toggleHandRaise = () => {
+        setHandRaise(!handRaise)
+    };
+
+    // Toggle video mute
+    const toggleScreenRecording = () => {
+        setScreenRecording(!screenRecording)
+    };
 
     // Toggle video mute
     const toggleVideoMute = () => {
@@ -333,6 +498,21 @@ function Conversation(props) {
                             setMessageList={setMessageList}
                             userMessage={userMessage}
                             setUserMessage={setUserMessage}
+                            setScreenShare={setScreenShare}
+                            screenShare={screenShare}
+                            toggleScreenRecording={toggleScreenRecording}
+                            setScreenRecording={setScreenRecording}
+                            screenRecording={screenRecording}
+                            handRaise={handRaise}
+                            setHandRaise={setHandRaise}
+                            toggleHandRaise={toggleHandRaise}
+                            inMeetingNotification={inMeetingNotification}
+                            setInMeetingNotification={setInMeetingNotification}
+                            handRaiseList={handRaiseList}
+                            setHandRaiseList={setHandRaiseList}
+                            handleHandRaise={handleHandRaise}
+                            setIsHost={setIsHost}
+                            isHost={isHost}
                         />
                     }
 
