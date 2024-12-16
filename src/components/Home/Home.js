@@ -4,83 +4,63 @@ import AppContext from '../AppContext';
 import "./Home.css";
 
 export default function Home() {
-    const [error, setError] = useState(null);
-    const [rawResponse, setRawResponse] = useState(null);
-    const [userInfo, setUserInfo] = useState(null); // State to store API user info
-    const {
-        accessToken,
-        fetchChatrooms,
-        chatrooms,
-        chatroomsError,
-    } = useContext(AppContext);
-
     const navigate = useNavigate();
+    const [userInfo, setUserInfo] = useState(null);
+    const [error, setError] = useState(null);
+    const [hasFetched, setHasFetched] = useState(false);  // Flag to track if the API is fetched
+    const accessToken = localStorage.getItem('accessToken');
 
-    // Fetch user data
     const fetchUserData = async () => {
         try {
-            // Construct the API URL
-            const apiUrl = `${process.env.REACT_APP_REST_URL}/im/user-data`;
+            if (hasFetched) return;  // Prevent multiple fetch calls
 
-            // Perform the API request
+            const apiUrl = `${process.env.REACT_APP_REST_URL}/im/user-data`;
             const response = await fetch(apiUrl, {
                 headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${accessToken}`, // Use Bearer token for authorization
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
                 },
             });
 
-            // Check if the response is not OK
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || `Error: ${response.statusText}`);
             }
 
-            // Parse the response JSON
             const data = await response.json();
-            setUserInfo(data)
-            console.log("API Response Data:", data);
 
-            // Validate and process user data
-            if (data?.user) {
-                const cleanedUser = {
-                    ...data.user,
-                    profilePic: cleanUrl(data.user.profilePic),
-                };
-                console.log(userInfo)
-                console.log("Processed User Data:", cleanedUser);
-                setUserInfo(cleanedUser);
-            } else {
-                console.warn("Unexpected API response structure:", data);
-                setUserInfo(null);
-            }
+            // Clean the profilePic URL and extract data
+            const cleanedData = {
+                currentUserId: data.currentUserId,
+                username: data.username,
+                profilePic: cleanUrl(data.profilePic),  // Clean the profilePic URL
+            };
+
+            setUserInfo(cleanedData);
+            localStorage.setItem('userInfo', JSON.stringify(cleanedData));  // Save to localStorage
+            setHasFetched(true);  // Mark the fetch as complete
+
         } catch (error) {
-            // Log error details and set error state
-            console.error("Error fetching user data:", error);
-            setError(error.message || "Failed to fetch user data");
-            setRawResponse(error.message || "No response data available");
+            console.error('Error fetching user data:', error);
+            setError(error.message || 'Failed to fetch user data');
         }
     };
 
-
-
-    // Helper function to clean malformed URLs
     const cleanUrl = (url) => {
         try {
-            // Remove duplicate protocol if it exists
             return url.replace(/https?:\/\/.*https?:\/\//, 'https://');
         } catch {
-            console.error("Invalid URL format:", url);
-            return 'https://via.placeholder.com/150'; // Default placeholder image
+            console.error('Invalid URL format:', url);
+            return 'https://via.placeholder.com/150';
         }
     };
 
     useEffect(() => {
         if (accessToken) {
             fetchUserData();
-            fetchChatrooms();
         }
-    }, [accessToken, fetchChatrooms]);
+    }, []);  // Adding 'hasFetched' ensures the API call is triggered only once
+
 
     const handleInstantMessagingClick = () => {
         navigate('/chat');
@@ -122,25 +102,39 @@ export default function Home() {
                     <div className="user-name-typing">
                         <span className="user-name">Welcome to Beep, {userInfo?.username || 'Guest'}</span>
                     </div>
-                    <button className="nav-buttons-im" onClick={handleInstantMessagingClick}>
+                    <button className="nav-buttons-im"  onClick={handleInstantMessagingClick}>
                         <div className="button-icon-div">
-                            <img className="button-icon" src="/images/im (2).webp" alt="IM" />
+                            <img className="button-icon" src="/images/Im.jpg" alt="im" />
                         </div>
                         <div className="button-text-container">
                             <div className="title-div">
-                                <span className="button-title">Instant Messaging</span>
-                                <img style={{ width: "10%" }} src="/images/arrow.svg" alt="arrow" />
+                                <span className="button-title">Instant messaging</span>
+                            </div>
+                            <div className="text-description-div">
+                                <span className="button-Description">Streamline communication with fast, real-time messaging. Share updates, files, and ideas instantly.</span>
+                            </div>
+                            <div className="bottom-button">
+                                <button className="share">
+                                   <img className='btm-btn-icon' src="/images/send.svg" alt="" />
+                                </button>
                             </div>
                         </div>
                     </button>
-                    <button className="nav-buttons" onClick={handleonvcClick}>
+                    <button className="nav-buttons" style={{gap:"20px"}}>
                         <div className="button-icon-div">
-                            <img className="button-icon" src="/images/Vc.webp" alt="VC" />
+                            <img className="button-icon" src="/images/Vc.jpg" alt="VC" />
                         </div>
                         <div className="button-text-container">
                             <div className="title-div">
-                                <span className="button-title">Video Conferencing</span>
-                                <img style={{ width: "10%" }} src="/images/arrow.svg" alt="arrow" />
+                                <span className="button-title" >Video Conferencing</span>
+                            </div>
+                            <div className="text-description-div">
+                                <span className="button-Description">Connect with people around the world through live virtual events, from small meetings to large conferences.</span>
+                            </div>
+                            <div className="bottom-button">
+                                <button className="share">
+                                   <img className='btm-btn-icon' src="/images/send.svg" alt="" />
+                                </button>
                             </div>
                         </div>
                     </button>

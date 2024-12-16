@@ -12,17 +12,19 @@ const departments = [
   { name: 'Sales' },
 ];
 const Chat = () => {
-  const { fetchChatrooms, chatrooms, chatroomsError, messages } =
-    useContext(AppContext);
+  const { fetchChatrooms, chatrooms, chatroomsError } = useContext(AppContext);
   const [input, setInput] = useState("");
   const [active, setActive] = useState("chats");
   const [filteredChats, setFilteredChats] = useState([]);
   const [selectedChatId, setSelectedChatId] = useState(null); // Store the selected chatroom's ID
+  const [userInfo, setUserInfo] = useState(null);
+  const [participantInfo, setParticipantInfo] = useState(null);
 
   // Fetch chatrooms when the component mounts
   useEffect(() => {
     const getChatrooms = async () => {
       await fetchChatrooms();
+      console.log(chatrooms);
     };
     getChatrooms();
   }, [fetchChatrooms]);
@@ -55,16 +57,41 @@ const Chat = () => {
     setFilteredChats(filtered);
   }, [input, chatrooms]);
 
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo));
+    }
+  }, []);
+
   const handleToggle = (option) => {
     setActive(option);
   };
 
   const handleChatClick = (chatId) => {
-    setSelectedChatId(chatId); // Update the selected chat ID
+    const selectedChat = chatrooms.find((chat) => chat.chatId === chatId);
+    if (selectedChat) {
+      const participantInfo = {
+        participantId: selectedChat.participant.user_id,
+        name: selectedChat.participant.name,
+        profilePic: selectedChat.participant.profilePic,
+      };
+      setSelectedChatId(chatId); // Update selected chat ID
+      setParticipantInfo(participantInfo); // Store participant info to pass to ChatSection
+    }
   };
-  const cleanProfilePicUrl = (url) => {
-    const prefixToRemove = 'https://localhost:8000/';
-    return url.startsWith(prefixToRemove) ? url.replace(prefixToRemove, '') : url;
+
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.clear();
+    // Clear sessionStorage
+    sessionStorage.clear();
+    // Clear cookies (optional, depending on your cookie settings)
+    document.cookie.split(';').forEach((cookie) => {
+      document.cookie = cookie.trim().split('=')[0] + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+    });
+    // Refresh the page
+    window.location.reload();
   };
 
   return (
@@ -73,12 +100,20 @@ const Chat = () => {
         <div className="chat_saprator">
           <div className="_chat_profile_department">
             <div className="chat_user_profile_pic_div">
-              <img className="chat_user_profile_pic" src="images/dp.jpg" alt="" />
+              <img
+                className="chat_user_profile_pic"
+                src={userInfo ? userInfo.profilePic : "images/dp.jpg"}
+                alt="Profile"
+              />
             </div>
             <div className="_home_department_section">
               <div className="home_button_chat">
                 <button className="_home_button">
-                  <img className="chat_saprator_home_button" src="/images/home-icon.svg" alt="home-icon" />
+                  <img
+                    className="chat_saprator_home_button"
+                    src="/images/home-icon.svg"
+                    alt="home-icon"
+                  />
                 </button>
               </div>
               <div className="section-list-department" style={styles.list}>
@@ -86,35 +121,46 @@ const Chat = () => {
                   <div key={index} style={styles.item}>
                     <div style={styles.icon}>
                       {department.name
-                        .split(' ')
+                        .split(" ")
                         .map((word) => word.charAt(0).toUpperCase())
                         .slice(0, 1)
-                        .join('')}
+                        .join("")}
                     </div>
                   </div>
                 ))}
               </div>
               <div className="home_button_chat">
                 <button className="_home_button">
-                  <img className="chat_saprator_home_button" src="/images/plus-icon.svg" alt="home-icon" />
+                  <img
+                    className="chat_saprator_home_button"
+                    src="/images/plus-icon.svg"
+                    alt="home-icon"
+                  />
                 </button>
               </div>
               <div className="bottom_logout_button">
-                <button className="logout_button" style={{ transform: 'rotate(180deg)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                <button
+                  className="logout_button"
+                  onClick={handleLogout}
+                  style={{
+                    transform: "rotate(180deg)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
                   <img
                     src="./images/Logout_button.svg"
                     alt="Logout"
                     style={{
-                      width: '100%',
-                      height: 'auto',
-                      display: 'block',
+                      width: "100%",
+                      height: "auto",
+                      display: "block",
                     }}
                   />
                 </button>
-
               </div>
             </div>
-
           </div>
           <div className="_chat_group_section">
             <div className="search-container">
@@ -148,8 +194,9 @@ const Chat = () => {
                   filteredChats.map((chatroom) => (
                     <div
                       key={chatroom.chatId}
-                      className={`user-container ${chatroom.chatId === selectedChatId ? "active-chat" : ""
-                        }`}
+                      className={`user-container ${
+                        chatroom.chatId === selectedChatId ? "active-chat" : ""
+                      }`}
                       onClick={() => handleChatClick(chatroom.chatId)} // Handle chat selection
                     >
                       <div className="userinfo">
@@ -189,7 +236,6 @@ const Chat = () => {
                     className="img-right"
                     alt=""
                   />
-
                 </div>
               )}
             </div>
@@ -198,7 +244,10 @@ const Chat = () => {
       </div>
       <div className="nav-right">
         {selectedChatId ? (
-          <Chatsection chatroomId={selectedChatId} /> // Pass selected chatroomId to Chatsection
+          <Chatsection
+            participantInfo={participantInfo}
+            currentUserInfo={userInfo}
+          />
         ) : (
           <div className="placeholder">
             <div className="no-chat">
@@ -214,6 +263,7 @@ const Chat = () => {
     </div>
   );
 };
+
 
 export default Chat;
 const styles = {

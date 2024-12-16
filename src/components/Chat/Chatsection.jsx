@@ -211,11 +211,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:8080';
-const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTI5Njc0MDRmMjEzZWJmZDVmYjAyOCIsImVtYWlsIjoiYWxwaGFAZ21haWwuY29tIiwidXNlcm5hbWUiOiJhbHBoYSIsImlhdCI6MTczMzkxMjMwMiwiZXhwIjoxNzMzOTk4NzAyfQ.IQQDu23OYE0CTSQdlRa63IE2opHde3WfMJsfYuMcB9Y';
-
-const ChatSection = () => {
+const SERVER_URL = process.env.REACT_APP_SOCKET_URL;
+const token = localStorage.getItem("accessToken");
+const ChatSection = ({ participantInfo,currentUserInfo}) => {
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [visibleMessages, setVisibleMessages] = useState([]);
@@ -229,20 +227,22 @@ const ChatSection = () => {
     const chatRef = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
+    console.log(participantInfo)
+    
 
-    const alphaId = '6752967404f213ebfd5fb028'; // Alpha's user ID
-    const betaId = '6752968504f213ebfd5fb02c'; // Beta's user ID
+    const alphaId = currentUserInfo.currentUserId; // Alpha's user ID
+    const betaId = participantInfo.participantId; // Beta's user ID
     const PAGE_SIZE = 20;
 
     useEffect(() => {
         const newSocket = io(`${SERVER_URL}/im`, { query: { token } });
         setSocket(newSocket);
-
+    
         newSocket.on('connect', () => {
             console.log('Connected to server');
             newSocket.emit('checkConversation', { participantId: betaId });
         });
-
+    
         newSocket.on('conversationCheckResponse', (data) => {
             if (data.exists) {
                 setActiveConversationId(data.conversationId);
@@ -255,12 +255,12 @@ const ChatSection = () => {
                 newSocket.emit('createConversation', { participantId: betaId });
             }
         });
-
+    
         newSocket.on('chatRoomCreated', (conversationId) => {
             setActiveConversationId(conversationId);
             newSocket.emit('joinRoom', conversationId);
         });
-
+    
         newSocket.on('receiveMessage', (msg) => {
             setMessages((prevMessages) => [...prevMessages, msg]);
             setVisibleMessages((prevVisible) => [...prevVisible, msg]);
@@ -268,16 +268,18 @@ const ChatSection = () => {
             newSocket.emit('isDelivered', msg.messageId);
             newSocket.emit('markAsSeen', msg.messageId);
         });
-
+    
         newSocket.on('Typing', () => {
             setIsTyping(true);
             setTimeout(() => setIsTyping(false), 2000);
         });
-
+    
         return () => {
             newSocket.disconnect();
         };
-    }, []);
+    }, [betaId]); // Ensure that useEffect is called unconditionally with all dependencies
+    
+    
 
 
     useEffect(() => {
@@ -286,6 +288,13 @@ const ChatSection = () => {
         }
     }, [filteredMessages]);
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && message.trim()) {
+            sendMessage();
+            e.preventDefault(); // Prevent the Enter key from triggering other actions
+        }
+    };
+    
     const sendMessage = () => {
         if (activeConversationId && message.trim()) {
             const newMessage = {
@@ -294,15 +303,22 @@ const ChatSection = () => {
                 date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
                 sentAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             };
-
+    
+            // Emit the message to the server
             socket.emit('sendMessage', { conversationId: activeConversationId, message });
+    
+            // Update the local state for the sent message
             setMessages((prevMessages) => [...prevMessages, newMessage]);
             setVisibleMessages((prevVisible) => [...prevVisible, newMessage]);
             setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
+    
+            // Clear the input field
             setMessage('');
         }
     };
-
+    
+    
+    
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -362,18 +378,17 @@ const ChatSection = () => {
 
     const renderMessages = () => {
         let lastDate = null;
-
+    
         return filteredMessages.map((msg, index) => {
             const currentDate = msg.date;
             const showDateHeader = currentDate !== lastDate;
             lastDate = currentDate;
-
+    
             const isAlpha = msg.senderId === alphaId;
-            const senderName = isAlpha ? 'Alpha' : 'Beta';
             const alignment = isAlpha ? 'flex-end' : 'flex-start';
             const backgroundColor = isAlpha ? '#CEF6DB' : '#ffffff';
             const textColor = isAlpha ? 'black' : 'black';
-
+    
             return (
                 <React.Fragment key={index}>
                     {showDateHeader && (
@@ -396,18 +411,33 @@ const ChatSection = () => {
                                 borderRadius: '8px',
                                 backgroundColor,
                                 color: textColor,
+                                minWidth: "10%"
                             }}
                         >
-                            <strong>{senderName}:</strong>
                             {highlightText(msg.message, searchQuery)}
+    
                             <br />
-                            <small>{msg.sentAt}</small>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                                alignContent: 'center'
+                            }}>
+                                <small>{msg.sentAt}</small>
+                            </div>
                         </div>
                     </div>
                 </React.Fragment>
             );
         });
     };
+    
+    useEffect(() => {
+        if (isTyping) {
+            console.log("User is typing...");
+        }
+    }, [isTyping]);
+    
 
     return (
         <div style={{ maxWidth: '100%', fontFamily: 'poppins' }}>
@@ -432,7 +462,8 @@ const ChatSection = () => {
                     }}
                 /> */}
                 <div className="profile-pic">
-                    <img
+                   <div style={{ display: 'flex',alignContent: 'center',alignItems: 'center', gap: '12px', fontFamily: 'cursive',}}>
+                   <img
                         style={{
                             display: 'flex',
                             alignContent: 'center',
@@ -443,7 +474,9 @@ const ChatSection = () => {
                             flexDirection: 'column',
                             borderRadius: '38px',
                         }}
-                        src="images/dp.jpg" alt="" />
+                        src={participantInfo.profilePic} alt="no " />
+                        <span>{participantInfo.name}</span>
+                   </div>
                 </div>
                 <button style={{
                     width: '4%',
@@ -451,7 +484,7 @@ const ChatSection = () => {
                     border: 'none',
                 }}
                 >
-                    <img style={{width:"65%"}} src="/images/search.svg" alt="" />
+                    <img style={{ width: "65%" }} src="/images/search.svg" alt="" />
                 </button>
             </div>
 
@@ -460,7 +493,8 @@ const ChatSection = () => {
                 onScroll={handleScroll}
                 style={{
                     maxHeight: '602px',
-                    overflowY: 'auto', // Enable scrolling only when necessary
+                    minHeight: '602px',
+                    overflowY: 'auto', 
                     backgroundColor: 'cornsilk', // Soft off-white background
                     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
                     padding: '15px', // Padding for content spacing
@@ -470,7 +504,49 @@ const ChatSection = () => {
                 }}
             >
                 {renderMessages()}
-                {isTyping && <div><em>Beta is typing...</em></div>}
+                {isTyping && (
+                    <svg
+                        height="25"
+                        width="50"
+                        className="loader"
+                        style={{
+                            animation: 'fadeOut 2s forwards'
+                        }}
+                    >
+                        <circle
+                            className="dot"
+                            cx="10"
+                            cy="20"
+                            r="3"
+                            style={{
+                                fill: 'grey',
+                                animation: 'dotPulse 1.4s infinite ease-in-out'
+                            }}
+                        />
+                        <circle
+                            className="dot"
+                            cx="20"
+                            cy="20"
+                            r="3"
+                            style={{
+                                fill: 'grey',
+                                animation: 'dotPulse 1.4s infinite ease-in-out',
+                                animationDelay: '0.2s'
+                            }}
+                        />
+                        <circle
+                            className="dot"
+                            cx="30"
+                            cy="20"
+                            r="3"
+                            style={{
+                                fill: 'grey',
+                                animation: 'dotPulse 1.4s infinite ease-in-out',
+                                animationDelay: '0.4s'
+                            }}
+                        />
+                    </svg>
+                )}
             </div>
 
             <div className="input-container" style={{
