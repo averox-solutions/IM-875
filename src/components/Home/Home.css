@@ -95,6 +95,7 @@
     align-items: flex-start;
     width: 25%;
     gap: 25px;
+    padding: 0% !important;
 }
 
 /* Hover Effect */
@@ -153,6 +154,7 @@
     align-items: flex-start;
     width: 25%;
     gap: 25px;
+    padding: 0% !important;
 }
 
 /* Hover Effect */
@@ -425,22 +427,22 @@
 
 .user-name-typing {
     overflow: hidden;
-    border-right: 0.15em solid rgb(0, 209, 0);
+    border-right: 0.15em solid #CEF6DB;
     white-space: nowrap;
     margin: 0 auto;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.05em;
     animation: typing 3.5s steps(40, end),
         blink-caret 0.75s step-end infinite;
     position: fixed;
-    top: 100px;
+    top: 76px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
     font-family: 'Courier New', Courier, monospace;
     color: black;
     z-index: 9999;
-    background: white;
-    padding: 5px 10px;
+    background: #CEF6DB;
+    padding: 6px 51px;
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
@@ -465,13 +467,13 @@
 }
 
 /* Typing effect animation */
-@keyframes typing {
+/* @keyframes typing {
     from {
-        width: 0;
+        width: 5%;
     }
 
     to {
-        width: 19%;
+        width: 39%;
     }
 }
 
@@ -484,6 +486,6 @@
     }
 
     20% {
-        border-color: rgb(0, 209, 0);
+        border-color: #CEF6DB;
     }
-}
+} */
