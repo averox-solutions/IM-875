@@ -310,7 +310,7 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
             // Update the local state for the sent message
             setMessages((prevMessages) => [...prevMessages, newMessage]);
             setVisibleMessages((prevVisible) => [...prevVisible, newMessage]);
-            setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
+            // setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
     
             // Clear the input field
             setMessage('');
