@@ -284,18 +284,18 @@ const styles = {
     alignContent: "center", // Corrected "align-content" to "alignContent"
   },
   icon: {
-    width: "40px", // Changed from invalid syntax
-    height: "40px", // Changed from invalid syntax
+    width: "30px", // Changed from invalid syntax
+    height: "30px", // Changed from invalid syntax
     borderRadius: "50%", // Corrected "borderradius" to "borderRadius"
-    backgroundColor: "white", // Corrected "backgroundcolor" to "backgroundColor"
+    backgroundColor: "#ffecec", // Corrected "backgroundcolor" to "backgroundColor"
     color: "black",
     display: "flex",
     alignItems: "center", // Corrected "alignitems" to "alignItems"
     justifyContent: "center", // Corrected "justifycontent" to "justifyContent"
-    fontWeight: "bold", // Corrected "fontweight" to "fontWeight"
-    fontSize: "24px", // Corrected "fontsize" to "fontSize"
+    fontWeight: "600", // Corrected "fontweight" to "fontWeight"
+    fontSize: "20px", // Corrected "fontsize" to "fontSize"
     textTransform: "uppercase", // Corrected "texttransform" to "textTransform"
-    flexDirection: "column", // Corrected "flexdirection" to "flexDirection"
+    flexDirection: "column", 
   },
 };
 

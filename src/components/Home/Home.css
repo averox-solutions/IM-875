@@ -10,7 +10,7 @@
 }
 
 .home-logo-div {
-    width: 10%;
+    width: 7%;
 }
 
 .home-logo {
@@ -434,7 +434,7 @@
     animation: typing 3.5s steps(40, end),
         blink-caret 0.75s step-end infinite;
     position: fixed;
-    top: 76px;
+    top: 42px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
@@ -467,7 +467,7 @@
 }
 
 /* Typing effect animation */
-/* @keyframes typing {
+@keyframes typing {
     from {
         width: 5%;
     }
@@ -488,4 +488,4 @@
     20% {
         border-color: #CEF6DB;
     }
-} */
+}

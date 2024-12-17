@@ -516,7 +516,8 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                             <span>{participantInfo.name}</span>
                         </div>
                     </div>
-                    <button
+                  <div className="addons-class">
+                  <button
                         style={{
                             width: "4%",
                             backgroundColor: "inherit",
@@ -526,6 +527,17 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                     >
                         <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
                     </button>
+                  <button
+                        style={{
+                            width: "4%",
+                            backgroundColor: "inherit",
+                            border: "none",
+                        }}
+                        onClick={handleSearchClick}
+                    >
+                        <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
+                    </button>
+                  </div>
                 </div>
                 {/* Overlay */}
                 {isOverlayVisible && (
