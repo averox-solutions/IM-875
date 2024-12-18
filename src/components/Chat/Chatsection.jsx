@@ -213,7 +213,7 @@ import io from 'socket.io-client';
 
 const SERVER_URL = process.env.REACT_APP_SOCKET_URL;
 const token = localStorage.getItem("accessToken");
-const ChatSection = ({ participantInfo,currentUserInfo}) => {
+const ChatSection = ({ participantInfo, currentUserInfo }) => {
     const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [visibleMessages, setVisibleMessages] = useState([]);
@@ -225,11 +225,11 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
     const [offset, setOffset] = useState(0);
     const [showPicker, setShowPicker] = useState(false);
     const chatRef = useRef(null);
+    const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
-    console.log(participantInfo)
-    
-
+    const [selectedMessageId, setSelectedMessageId] = useState(null);
+    const [isSearchVisible, setSearchVisible] = useState(false);
     const alphaId = currentUserInfo.currentUserId; // Alpha's user ID
     const betaId = participantInfo.participantId; // Beta's user ID
     const PAGE_SIZE = 20;
@@ -237,12 +237,12 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
     useEffect(() => {
         const newSocket = io(`${SERVER_URL}/im`, { query: { token } });
         setSocket(newSocket);
-    
+
         newSocket.on('connect', () => {
             console.log('Connected to server');
             newSocket.emit('checkConversation', { participantId: betaId });
         });
-    
+
         newSocket.on('conversationCheckResponse', (data) => {
             if (data.exists) {
                 setActiveConversationId(data.conversationId);
@@ -255,12 +255,12 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                 newSocket.emit('createConversation', { participantId: betaId });
             }
         });
-    
+
         newSocket.on('chatRoomCreated', (conversationId) => {
             setActiveConversationId(conversationId);
             newSocket.emit('joinRoom', conversationId);
         });
-    
+
         newSocket.on('receiveMessage', (msg) => {
             setMessages((prevMessages) => [...prevMessages, msg]);
             setVisibleMessages((prevVisible) => [...prevVisible, msg]);
@@ -268,18 +268,28 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
             newSocket.emit('isDelivered', msg.messageId);
             newSocket.emit('markAsSeen', msg.messageId);
         });
-    
+
         newSocket.on('Typing', () => {
             setIsTyping(true);
             setTimeout(() => setIsTyping(false), 2000);
         });
-    
+
         return () => {
             newSocket.disconnect();
         };
     }, [betaId]); // Ensure that useEffect is called unconditionally with all dependencies
-    
-    
+
+    const handleSearchClick = () => {
+        setOverlayVisible(true); // Show the overlay
+    };
+
+    const closeOverlay = () => {
+        setOverlayVisible(false); // Hide the overlay
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
 
 
     useEffect(() => {
@@ -288,13 +298,6 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
         }
     }, [filteredMessages]);
 
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && message.trim()) {
-            sendMessage();
-            e.preventDefault(); // Prevent the Enter key from triggering other actions
-        }
-    };
-    
     const sendMessage = () => {
         if (activeConversationId && message.trim()) {
             const newMessage = {
@@ -303,22 +306,19 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                 date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
                 sentAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             };
-    
+
             // Emit the message to the server
             socket.emit('sendMessage', { conversationId: activeConversationId, message });
-    
+
             // Update the local state for the sent message
             setMessages((prevMessages) => [...prevMessages, newMessage]);
             setVisibleMessages((prevVisible) => [...prevVisible, newMessage]);
-            setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
-    
+            // setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
+
             // Clear the input field
             setMessage('');
         }
     };
-    
-    
-    
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -377,18 +377,32 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
     };
 
     const renderMessages = () => {
+
+
+        const handleMessageClick = (messageId) => {
+            setSelectedMessageId(messageId === selectedMessageId ? null : messageId);
+        };
+
+        const handleDeleteMessage = (messageId) => {
+            // Implement your delete logic here
+            // This could involve calling a delete API or updating your messages state
+            console.log(`Deleting message with ID: ${messageId}`);
+            // Example: 
+            // setFilteredMessages(filteredMessages.filter(msg => msg.id !== messageId));
+        };
+
         let lastDate = null;
-    
+
         return filteredMessages.map((msg, index) => {
             const currentDate = msg.date;
             const showDateHeader = currentDate !== lastDate;
             lastDate = currentDate;
-    
+
             const isAlpha = msg.senderId === alphaId;
             const alignment = isAlpha ? 'flex-end' : 'flex-start';
             const backgroundColor = isAlpha ? '#CEF6DB' : '#ffffff';
             const textColor = isAlpha ? 'black' : 'black';
-    
+
             return (
                 <React.Fragment key={index}>
                     {showDateHeader && (
@@ -405,17 +419,20 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                         }}
                     >
                         <div
+                            onClick={() => handleMessageClick(msg.id)}
                             style={{
                                 maxWidth: '70%',
                                 padding: '10px',
                                 borderRadius: '8px',
                                 backgroundColor,
                                 color: textColor,
-                                minWidth: "10%"
+                                minWidth: "10%",
+                                position: 'relative',
+                                cursor: 'pointer'
                             }}
                         >
                             {highlightText(msg.message, searchQuery)}
-    
+
                             <br />
                             <div style={{
                                 display: 'flex',
@@ -425,67 +442,158 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                             }}>
                                 <small>{msg.sentAt}</small>
                             </div>
+
+                            {selectedMessageId === msg.id && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-30px',
+                                        right: '0',
+                                        backgroundColor: '#ff4d4d',
+                                        color: 'white',
+                                        padding: '5px 10px',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent parent click event
+                                        handleDeleteMessage(msg.id);
+                                    }}
+                                >
+                                    Delete
+                                </div>
+                            )}
                         </div>
                     </div>
                 </React.Fragment>
             );
         });
     };
-    
+
     useEffect(() => {
         if (isTyping) {
             console.log("User is typing...");
         }
     }, [isTyping]);
-    
+
 
     return (
         <div style={{ maxWidth: '100%', fontFamily: 'poppins' }}>
-
-
-            <div style={{
-                padding: '1%',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-            }}>
-                {/* <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    placeholder="Search messages"
+            <div>
+                {/* Header Section */}
+                <div
                     style={{
-                        width: '99%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
+                        padding: "1%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                     }}
-                /> */}
-                <div className="profile-pic">
-                   <div style={{ display: 'flex',alignContent: 'center',alignItems: 'center', gap: '12px', fontFamily: 'cursive',}}>
-                   <img
-                        style={{
-                            display: 'flex',
-                            alignContent: 'center',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '100%',
-                            flexWrap: 'nowrap',
-                            flexDirection: 'column',
-                            borderRadius: '38px',
-                        }}
-                        src={participantInfo.profilePic} alt="no " />
-                        <span>{participantInfo.name}</span>
-                   </div>
-                </div>
-                <button style={{
-                    width: '4%',
-                    backgroundColor: 'inherit',
-                    border: 'none',
-                }}
                 >
-                    <img style={{ width: "65%" }} src="/images/search.svg" alt="" />
-                </button>
+                    <div className="profile-pic">
+                        <div
+                            style={{
+                                display: "flex",
+                                alignContent: "center",
+                                alignItems: "center",
+                                gap: "12px",
+                                fontFamily: "cursive",
+                            }}
+                        >
+                            <img
+                                style={{
+                                    display: "flex",
+                                    alignContent: "center",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "100%",
+                                    flexWrap: "nowrap",
+                                    flexDirection: "column",
+                                    borderRadius: "38px",
+                                }}
+                                src={participantInfo.profilePic}
+                                alt="profile"
+                            />
+                            <span>{participantInfo.name}</span>
+                        </div>
+                    </div>
+                  <div className="addons-class">
+                  <button
+                        style={{
+                            width: "4%",
+                            backgroundColor: "inherit",
+                            border: "none",
+                        }}
+                        onClick={handleSearchClick}
+                    >
+                        <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
+                    </button>
+                  <button
+                        style={{
+                            width: "4%",
+                            backgroundColor: "inherit",
+                            border: "none",
+                        }}
+                        onClick={handleSearchClick}
+                    >
+                        <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
+                    </button>
+                  </div>
+                </div>
+                {/* Overlay */}
+                {isOverlayVisible && (
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: "68px",
+                            right: "-100px",
+                            width: "80%",
+                            // height: "100%",
+                            // backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "flex-start",
+                            zIndex: 1000,
+                        }}
+                    >
+                        <div
+                            style={{
+                                backgroundColor: "white",
+                                padding: "5px",
+                                borderRadius: "8px",
+                                width: "80%",
+                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                textAlign: "center",
+                            }}
+                        >
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                placeholder="Search messages"
+                                style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "4px",
+                                }}
+                            />
+                            <button
+                                onClick={closeOverlay}
+                                style={{
+                                    marginTop: "10px",
+                                    padding: "8px 16px",
+                                    backgroundColor: "#007BFF",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div
@@ -494,7 +602,7 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                 style={{
                     maxHeight: '602px',
                     minHeight: '602px',
-                    overflowY: 'auto', 
+                    overflowY: 'auto',
                     backgroundColor: 'cornsilk', // Soft off-white background
                     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
                     padding: '15px', // Padding for content spacing
@@ -573,14 +681,17 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleTyping}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            sendMessage();
+                        }
+                    }}
                     placeholder="Type a message"
                     style={{
                         flexGrow: 1,
                         padding: '11px',
                         border: 'none',
                         borderRadius: '15px',
-
                     }}
                 />
                 <button className="send-button" onClick={sendMessage} style={{
@@ -597,6 +708,7 @@ const ChatSection = ({ participantInfo,currentUserInfo}) => {
                     <img src="/images/send (2).svg" style={{ width: "55%" }} alt="" />
                 </button>
             </div>
+
         </div>
     );
 };
