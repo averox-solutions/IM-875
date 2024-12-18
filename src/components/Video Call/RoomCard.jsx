@@ -64,7 +64,7 @@ const RoomCard = (props) => {
           }}
         >
           {rooms.map((room) => {
-            console.log("Room Object:", room); // Debugging
+            // console.log("Room Object:", room); // Debugging
             return (
               <div
                 key={room.id || room._id || room.room_id} // Adjust key if needed

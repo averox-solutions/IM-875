@@ -98,10 +98,21 @@ const VideoCall = (props) => {
             alignItems: 'center',
             justifyContent: 'center',
             color: 'white',
-            zIndex: "100"
+            zIndex: "1"
           }}>
             <HiVideoCameraSlash style={{ color: "white", fontSize: "30px", minWidth: "30px" }} />
           </div>
+        )}
+        {isAudioMuted && (
+          <IoMdMicOff style={{
+            position: "absolute",
+            bottom: "10px",
+            right: "10px",
+            zIndex: "3",
+            color: "rgb(255,255,255)",
+            fontSize: "20px",
+            minWidth: "20px"
+          }} />
         )}
         <span className="vc_participants_ite_loader"></span>
         <video
@@ -118,9 +129,9 @@ const VideoCall = (props) => {
         />
       </div>
 
-      {peers?.map(({ peer, peer_id, username }) => {
+      {peers?.map(({ peer, peer_id, username, audioMuted, videoMuted }) => {
         return (
-          <RemotePeer peerID={peer_id} key={peer_id} peer={peer} username={username} />
+          <RemotePeer peerID={peer_id} key={peer_id} audioMuted={audioMuted} peer={peer} username={username} videoMuted={videoMuted} />
         )
       })}
 
@@ -246,7 +257,7 @@ export default VideoCall;
 
 
 
-function RemotePeer({ peer, peerID, username }) {
+function RemotePeer({ peer, peerID, username, videoMuted, audioMuted }) {
   const remoteVideoRef = useRef(null);
 
   useEffect(() => {
@@ -284,19 +295,31 @@ function RemotePeer({ peer, peerID, username }) {
           transform: 'scaleX(-1)'
         }}
       />
-      {/* {isVideoMuted && ( */}
-      {/* <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: '#6B7280',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white'
-      }}>
-        Video Muted
-      </div> */}
-      {/* )} */}
+      {videoMuted && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundColor: '#6B7280',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          zIndex: "2"
+        }}>
+          <HiVideoCameraSlash style={{ color: "white", fontSize: "30px", minWidth: "30px" }} />
+        </div>
+      )}
+      {audioMuted && (
+        <IoMdMicOff style={{
+          position: "absolute",
+          bottom: "10px",
+          right: "10px",
+          zIndex: "3",
+          color: "rgb(255,255,255)",
+          fontSize: "20px",
+          minWidth: "20px"
+        }} />
+      )}
     </div>
   );
 }

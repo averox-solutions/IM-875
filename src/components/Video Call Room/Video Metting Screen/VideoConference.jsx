@@ -45,14 +45,25 @@ const VideoConference = (props) => {
     setHandRaiseList,
     handleHandRaise,
     isHost,
-    setIsHost
+    setIsHost,
+    muteUserMic,
+    muteUserVideo,
+    kickUser,
+    promoteToHost,
+    demoteToViewer,
+    setActivePopupIndex,
+    activePopupIndex,
+    isOwner,
+    setIsOwner,
+    endMeetingForAll,
+    muteAllVideo,
+    muteAllMic
   } = props
 
   const [isSearchListVisible, setIsSearchListVisible] = useState(false);
   const [firstSearchItem, setFirstSearchItem] = useState("");
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [activePopupIndex, setActivePopupIndex] = useState(null);
   const [chatView, setChatView] = useState('chat')
 
   const toggleSearchList = () => {
@@ -64,61 +75,9 @@ const VideoConference = (props) => {
   };
   const [activeList, setActiveList] = useState(null);
 
-  const toggleList = (listName) => {
-    setActiveList(activeList === listName ? null : listName);
-  };
-
-  const [activeView, setActiveView] = useState("video");
-
-  const toggleView = (view) => {
-    setActiveView(view);
-  };
   const navigateTo = useNavigation();
-  const handleNavigation = () => {
-    navigateTo("/about");
-  };
-  const placeholderImages = [
-    "../images/Image1.png",
-    "../images/Image2.png",
-    "../images/Image3.png",
-    "../images/Image4.png",
-    "../images/Image5.png",
-    "../images/Image6.png",
-    "../images/Image7.png",
-    "../images/Image8.png",
-    "../images/Image9.png",
-    "../images/Image10.png",
-    "../images/Image11.png",
-    "../images/Image12.png",
-  ];
 
-  const [streams, setStreams] = useState([]);
-  const videoRefs = useRef([]);
-  const [active, setActive] = useState("chats");
-  const [micMuted, setMicMuted] = useState(false);
-  const [videoOff, setVideoOff] = useState(false);
 
-  const participants = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Alice Johnson" },
-    { id: 4, name: "Antonio" },
-    { id: 5, name: "Brayden" },
-    { id: 6, name: "Devin" },
-    { id: 7, name: "Marco" },
-  ];
-
-  const toggle = (option) => {
-    setActive(option);
-  };
-
-  const toggleMic = () => {
-    setMicMuted(!micMuted);
-  };
-
-  const toggleVideo = () => {
-    setVideoOff(!videoOff);
-  };
 
   const toggleScreenShare = () => {
     setScreenShare(!screenShare);
@@ -247,6 +206,16 @@ const VideoConference = (props) => {
 
       <div className="vc_participant_controls">
         <div className="vc_participant_control_child">
+          {isHost && <div id="vc_participant_control_chil_popup">
+            {(isOwner || (isHost && !peers.some(peer => peer.is_owner === true))) &&
+              <div onClick={endMeetingForAll} className="vc_participant_control_chil_popu_item">
+                End Meeting
+              </div>
+            }
+            <div onClick={muteAllMic} className="vc_participant_control_chil_popu_item">Mute All Microphone</div>
+            <div onClick={muteAllVideo} className="vc_participant_control_chil_popu_item">Mute All Video</div>
+          </div>
+          }
           <button
             // style={screenRecording ? { background: "rgb(230,230,230)" } : {}}
             onClick={toggleScreenRecording}
@@ -305,11 +274,14 @@ const VideoConference = (props) => {
             }
           </button>
 
-          <button
+          {isHost && <button
+            onClick={() => {
+              document.getElementById("vc_participant_control_chil_popup")?.classList?.toggle('active')
+            }}
             className="vc_participant_control_btns"
           >
             <BsThreeDots className="vc_participant_control_btn_icon" />
-          </button>
+          </button>}
 
           <button style={{ background: "rgb(230,0,0)" }} className="vc_participant_control_btns" onClick={handleLeaveRoom}>
             <ImPhoneHangUp style={{ color: "white" }} className="vc_participant_control_btn_icon" />
@@ -480,7 +452,11 @@ const VideoConference = (props) => {
             <h1 className="chat_participants_body_h1">Participants List</h1>
             <div className="chat_participants_body_participants_master">
               <span className="chat_participants_body_item">
-                {username}
+                <span>
+                  {username}
+                  {isOwner && isHost && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>OWNER</span>}
+                  {isHost && !isOwner && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>HOST</span>}
+                </span>
               </span>
               {peers?.map((data, index) => {
 
@@ -490,26 +466,35 @@ const VideoConference = (props) => {
                     onClick={(e) => e.stopPropagation()}>
                     <span>
                       {data.username}
+                      {data.is_owner && data.is_host && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>OWNER</span>}
+                      {data.is_host && !data.is_owner && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>HOST</span>}
                     </span>
-                    {isHost && <div onClick={() => {
-                      setActivePopupIndex(activePopupIndex === index ? null : index);
-                    }} className="chat_participants_body_item_ico_master">
-                      < BsThreeDots className="chat_participants_body_item_ico_child" />
-                    </div>}
-                    {activePopupIndex === index && isHost &&
+                    {((isHost && !data.is_owner && !data.is_host) || (isOwner)) &&
+                      <div onClick={() => {
+                        setActivePopupIndex(activePopupIndex === index ? null : index);
+                      }} className="chat_participants_body_item_ico_master">
+                        < BsThreeDots className="chat_participants_body_item_ico_child" />
+                      </div>
+                    }
+                    {(activePopupIndex === index && ((isHost && !data.is_owner && !data.is_host) || isOwner)) &&
                       <div className='chat_participants_body_ite_popup'>
-                        <div className="chat_participants_body_ite_popu_item">
+                        {!data.audioMuted && <div onClick={() => { muteUserMic(data) }} className="chat_participants_body_ite_popu_item">
                           Mute Microphone
-                        </div>
-                        <div className="chat_participants_body_ite_popu_item">
+                        </div>}
+                        {!data.videoMuted && <div onClick={() => { muteUserVideo(data) }} className="chat_participants_body_ite_popu_item">
                           Mute Video
-                        </div>
-                        <div className="chat_participants_body_ite_popu_item">
+                        </div>}
+                        <div onClick={() => { kickUser(data) }} className="chat_participants_body_ite_popu_item">
                           Kick User
                         </div>
-                        <div className="chat_participants_body_ite_popu_item">
+                        {!data.is_host && isOwner && <div onClick={() => { promoteToHost(data) }} className="chat_participants_body_ite_popu_item">
                           Promote to Host
                         </div>
+                        }
+                        {data.is_host && isOwner && <div onClick={() => { demoteToViewer(data) }} className="chat_participants_body_ite_popu_item">
+                          Demote to Viewer
+                        </div>
+                        }
                       </div>
                     }
                   </div>

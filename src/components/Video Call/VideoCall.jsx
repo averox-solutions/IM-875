@@ -33,7 +33,7 @@ const VideoCall = () => {
         throw new Error(`Error fetching data: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log("Fetched Data:", data);
+      // console.log("Fetched Data:", data);
       return data;
     } catch (error) {
       console.error("Error:", error.message);
@@ -72,7 +72,7 @@ const VideoCall = () => {
       }
 
       const data = await res.json();
-      console.log("API Response:", data); // Debugging
+      // console.log("API Response:", data); // Debugging
       if (data.rooms) {
         setIsLoading(false)
         setRooms(data.rooms);

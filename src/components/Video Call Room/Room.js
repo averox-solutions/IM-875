@@ -17,6 +17,9 @@ function Socket() {
     let { user, accessToken } = useContext(AppContext);
 
     const [isHost, setIsHost] = useState(false);
+    const [isOwner, setIsOwner] = useState(false);
+
+    const [activePopupIndex, setActivePopupIndex] = useState(null);
 
     const [messageList, setMessageList] = useState([])
 
@@ -68,6 +71,8 @@ function Socket() {
                     localStream={localStream}
                     setLocalStream={setLocalStream}
                     peers={peers}
+                    activePopupIndex={activePopupIndex}
+                    setActivePopupIndex={setActivePopupIndex}
                     setPeers={setPeers}
                     username={username}
                     setUsername={setUsername}
@@ -91,6 +96,8 @@ function Socket() {
                     setInMeetingNotification={setInMeetingNotification}
                     setIsHost={setIsHost}
                     isHost={isHost}
+                    isOwner={isOwner}
+                    setIsOwner={setIsOwner}
                 />
                 :
                 <Initial
@@ -113,6 +120,8 @@ function Socket() {
                     setMessageList={setMessageList}
                     setIsHost={setIsHost}
                     isHost={isHost}
+                    isOwner={isOwner}
+                    setIsOwner={setIsOwner}
                 />
             }
         </>
