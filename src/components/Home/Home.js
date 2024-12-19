@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppContext from '../AppContext';
 import "./Home.css";
+import VCImg from '../../assets/vc.webp'
 
 export default function Home() {
     const navigate = useNavigate();
@@ -102,7 +103,7 @@ export default function Home() {
                     <div className="user-name-typing">
                         <span className="user-name">Welcome to Beep,All in one Secure platefrom</span>
                     </div>
-                    <button className="nav-buttons-im"  onClick={handleInstantMessagingClick}>
+                    <button className="nav-buttons-im" onClick={handleInstantMessagingClick}>
                         <div className="button-icon-div">
                             <img className="button-icon" src="/images/Im.jpg" alt="im" />
                         </div>
@@ -115,14 +116,14 @@ export default function Home() {
                             </div>
                             <div className="bottom-button">
                                 <button className="share">
-                                   <img className='btm-btn-icon' src="/images/send.svg" alt="" />
+                                    <img className='btm-btn-icon' src="/images/send.svg" alt="" />
                                 </button>
                             </div>
                         </div>
                     </button>
-                    <button className="nav-buttons" style={{gap:"20px"}}>
+                    <button className="nav-buttons" style={{ gap: "20px" }}>
                         <div className="button-icon-div">
-                            <img className="button-icon" src="/images/Vc.jpg" alt="VC" />
+                            <img className="button-icon" src={VCImg} alt="VC" />
                         </div>
                         <div className="button-text-container">
                             <div className="title-div">
@@ -133,7 +134,7 @@ export default function Home() {
                             </div>
                             <div className="bottom-button">
                                 <button className="share">
-                                   <img className='btm-btn-icon' src="/images/send.svg" alt="" />
+                                    <img className='btm-btn-icon' src="/images/send.svg" alt="" />
                                 </button>
                             </div>
                         </div>

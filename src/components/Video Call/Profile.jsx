@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./Profile.css";
 
 const Profile = () => {
   const [fullName, setFullName] = useState("haroonmazhar");
@@ -9,6 +10,14 @@ const Profile = () => {
     name: "Administrator",
     imageUrl: "../../../Images/user.png",
   });
+  const [activeSection, setActiveSection] = useState("AccountInfo");
+
+  useEffect(() => {
+    const storedAvatar = localStorage.getItem("avatar");
+    if (storedAvatar) {
+      setAvatar(storedAvatar);
+    }
+  }, []);
 
   const handleReset = () => {
     setFullName("haroonmazhar");
@@ -18,315 +27,173 @@ const Profile = () => {
 
   const handleAvatarUpload = (event) => {
     const file = event.target.files[0];
-    setAvatar(URL.createObjectURL(file));
+    if (file) {
+      const avatarUrl = URL.createObjectURL(file);
+      setAvatar(avatarUrl);
+      localStorage.setItem("avatar", avatarUrl);
+    }
   };
 
   const handleAvatarDelete = () => {
     setAvatar(null);
+    localStorage.removeItem("avatar");
   };
 
+  const renderChangePassword = () => (
+    <div className="form-section-profile">
+      <h2>Change Password</h2>
+      <div className="form-group-profile">
+        <label>Current Password</label>
+        <input type="password" placeholder="Enter your password" />
+      </div>
+      <div className="form-group-profile">
+        <label>New Password</label>
+        <input type="password" placeholder="Enter your new password" />
+      </div>
+      <div className="form-group-profile">
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Confirm your new password" />
+      </div>
+      <div className="button-container-profile">
+        <button className="button-cancel">Cancel</button>
+        <button className="button update-profile">Change Password</button>
+      </div>
+    </div>
+  );
+
+  const renderDeleteAccount = () => (
+    <div className="form-section-profile">
+      <h2>Permanently Delete Your Account</h2>
+      <p className="p-del">
+        If you choose to delete your account, it will <strong>NOT</strong> be
+        recoverable. All information regarding your account, including settings,
+        rooms, and recordings will be removed.
+      </p>
+      <button className="button delete-account">
+        Yes, I would like to delete my account
+      </button>
+    </div>
+  );
+
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f8f9fa",
-        minHeight: "100vh",
-      }}
-    >
-      {/* Header Section */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "10px 20px",
-          backgroundColor: "#ffffff",
-          borderBottom: "1px solid #e9ecef",
-        }}
-      >
+    <div className="profile1-container">
+      <header className="header-profile">
         <img
-          className="logo-img"
+          className="logo-beep-img"
           src="../../../Images/Logo.png"
           alt="beeplogo"
-          style={{ height: "50px", width: "100px" }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <h3 style={{ color: "grey", fontWeight: "none", fontSize: "16px" }}>
-            {userData.name}
-          </h3>
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              backgroundColor: "#e9ecef",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+        <div className="user-info-1">
+          <h3 className="user-name-1">{userData.name}</h3>
+          <div className="avatar-container-1">
             <img
-              style={{ borderRadius: "50px" }}
-              src={userData.imageUrl}
-              alt="user"
+              className="avatar-user"
+              src={avatar || userData.imageUrl}
+              alt=""
             />
           </div>
         </div>
       </header>
 
-      {/* Main Content Section */}
-      <div
-        style={{
-          display: "flex",
-          margin: "20px",
-          backgroundColor: "#ffffff",
-          borderRadius: "10px",
-          overflow: "hidden",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <div
-          style={{
-            width: "250px",
-            backgroundColor: "#f1f4f9",
-            padding: "20px",
-          }}
-        >
+      <div className="profile-content-profile">
+        <div className="sidebar-profile">
           <div
-            style={{
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              backgroundColor: "#28a745",
-              color: "white",
-              fontWeight: "bold",
-            }}
+            className={`sidebar-item-profile ${
+              activeSection === "AccountInfo" ? "active" : ""
+            }`}
+            onClick={() => setActiveSection("AccountInfo")}
           >
             Account Info
           </div>
           <div
-            style={{
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              color: "#495057",
-            }}
+            className={`sidebar-item-profile ${
+              activeSection === "ChangePassword" ? "active" : ""
+            }`}
+            onClick={() => setActiveSection("ChangePassword")}
           >
             Change Password
           </div>
           <div
-            style={{
-              padding: "10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              color: "#495057",
-            }}
+            className={`sidebar-item-profile ${
+              activeSection === "DeleteAccount" ? "active" : ""
+            }`}
+            onClick={() => setActiveSection("DeleteAccount")}
           >
             Delete Account
           </div>
         </div>
-        <div
-          style={{
-            padding: "30px",
-            backgroundColor: "#ffffff",
-            display: "flex",
-            gap:"800px"
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "500px",
-              marginBottom: "30px",
-            }}
-          >
-            <h2 style={{ marginBottom: "20px", color: "#343a40" }}>
-              Update Account Info
-            </h2>
-            <div style={{ marginBottom: "20px" , width:"300%"}}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "10px",
-                  color: "#495057",
-                }}
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ced4da",
-                  borderRadius: "5px",
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "20px", width:"300%" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "10px",
-                  color: "#495057",
-                }}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ced4da",
-                  borderRadius: "5px",
-                }}
-              />
-            </div>
-            <div style={{ marginBottom: "20px", width:"310%" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "10px",
-                  color: "#495057",
-                }}
-              >
-                Language
-              </label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  border: "1px solid #ced4da",
-                  borderRadius: "5px",
-                }}
-              >
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-              </select>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "15px",
-              }}
-            >
-              <button
-                onClick={handleReset}
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  backgroundColor: "#f8f9fa",
-                  fontWeight: "bold",
-                  color: "#343a40",
-                }}
-              >
-                Reset
-              </button>
-              <button
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  backgroundColor: "#28a745",
-                  fontWeight: "bold",
-                  color: "white",
-                }}
-              >
-                Update
-              </button>
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "20px",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "50%",
-                overflow: "hidden",
-                backgroundColor: "#f8f9fa",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="Avatar"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              ) : (
-                <div style={{ width: "100%", height: "100%" }}></div>
-              )}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-              <label
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-              >
-                Upload Avatar
-                <input
-                  type="file"
-                  style={{ display: "none" }}
-                  onChange={handleAvatarUpload}
-                />
-              </label>
-              <button
-                onClick={handleAvatarDelete}
-                disabled={!avatar}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: avatar ? "#dc3545" : "#f8f9fa",
-                  color: avatar ? "white" : "#ced4da",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: avatar ? "pointer" : "not-allowed",
-                  fontWeight: "bold",
-                }}
-              >
-                Delete Avatar
-              </button>
-            </div>
-          </div>
+
+        <div className="main-content-profile">
+          {activeSection === "AccountInfo" && (
+ <div className="profile-container">
+ {/* Left Side - Update Account Info */}
+ <div className="form-section-profile">
+   <h2>Update Account Info</h2>
+   <div className="form-group-profile">
+     <label>Full Name</label>
+     <input
+       type="text"
+       value={fullName}
+       onChange={(e) => setFullName(e.target.value)}
+     />
+   </div>
+   <div className="form-group-profile">
+     <label>Email</label>
+     <input
+       type="email"
+       value={email}
+       onChange={(e) => setEmail(e.target.value)}
+     />
+   </div>
+   <div className="form-group-profile">
+     <label>Language</label>
+     <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+       <option value="English">English</option>
+       <option value="Urdu">Urdu</option>
+       <option value="Punjabi">Punjabi</option>
+     </select>
+   </div>
+
+   <div className="button-container-profile">
+     <button onClick={handleReset} className="button reset">
+       Reset
+     </button>
+     <button className="button update-profile">Update</button>
+   </div>
+ </div>
+
+ {/* Right Side - Avatar Upload/Delete */}
+ <div className="avatar-section-profile">
+   <div className="avatar-preview">
+     {avatar ? (
+       <img src={avatar} alt="" className="avatar-image" />
+     ) : (
+       <div className="avatar-placeholder"></div>
+     )}
+   </div>
+   <div className="avatar-actions">
+     <label className="upload-avatar-button">
+       Upload Avatar
+       <input
+         type="file"
+         className="hidden-input"
+         onChange={handleAvatarUpload}
+       />
+     </label>
+     <button
+       onClick={handleAvatarDelete}
+       disabled={!avatar}
+       className={`delete-avatar-button ${avatar ? "active" : "disabled"}`}
+     >
+       Delete Avatar
+     </button>
+   </div>
+ </div>
+</div>
+
+          )}
+          {activeSection === "ChangePassword" && renderChangePassword()}
+          {activeSection === "DeleteAccount" && renderDeleteAccount()}
         </div>
       </div>
     </div>

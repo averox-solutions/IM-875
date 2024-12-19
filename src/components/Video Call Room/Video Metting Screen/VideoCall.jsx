@@ -81,7 +81,7 @@ const VideoCall = (props) => {
 
   return (
     <div
-      className="vc_participants_master"
+      id="vc_participants_master"
     >
       <div
         className="vc_participants_item"
@@ -93,7 +93,7 @@ const VideoCall = (props) => {
           <div style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: '#6B7280',
+            backgroundColor: 'rgb(50,50,50)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -255,6 +255,54 @@ const VideoCall = (props) => {
 
 export default VideoCall;
 
+// function RemotePeer({ peer, peerID }) {
+//   const remoteVideoRef = useRef(null);
+
+//   // useEffect(() => {
+//   //     if (peer) {
+//   //         peer.on('stream', stream => {
+//   //             if (remoteVideoRef.current) {
+//   //                 remoteVideoRef.current.srcObject = stream;
+//   //             }
+//   //         });
+//   //     }
+//   // }, [peer]);
+
+//   useEffect(() => {
+//     if (peer) {
+//       peer.on('stream', stream => {
+//         if (remoteVideoRef.current) {
+//           remoteVideoRef.current.srcObject = stream;
+//         }
+//       });
+
+//       peer.on('error', (err) => {
+//         console.error(`Peer connection error for peer ${peerID}:`, err);
+//       });
+//     }
+//   }, [peer, peerID]);
+
+//   return (
+//     <div key={peerID} style={{
+//       width: '256px',
+//       height: '192px',
+//       backgroundColor: '#E5E7EB',
+//       borderRadius: '8px',
+//       overflow: 'hidden'
+//     }}>
+//       <video
+//         ref={remoteVideoRef}
+//         autoPlay
+//         style={{
+//           width: '100%',
+//           height: '100%',
+//           objectFit: 'cover'
+//         }}
+//       />
+//     </div>
+//   );
+// }
+
 
 
 function RemotePeer({ peer, peerID, username, videoMuted, audioMuted }) {
@@ -264,6 +312,7 @@ function RemotePeer({ peer, peerID, username, videoMuted, audioMuted }) {
     if (peer) {
 
       peer?.on('stream', stream => {
+        console.log('Audio tracks:', stream.getAudioTracks());
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = stream;
         }
@@ -287,7 +336,6 @@ function RemotePeer({ peer, peerID, username, videoMuted, audioMuted }) {
         className="vc_participants_ite_vid"
         ref={remoteVideoRef}
         autoPlay
-        muted
         style={{
           width: '100%',
           height: "100%",
@@ -299,7 +347,7 @@ function RemotePeer({ peer, peerID, username, videoMuted, audioMuted }) {
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundColor: '#6B7280',
+          backgroundColor: 'rgb(50,50,50)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

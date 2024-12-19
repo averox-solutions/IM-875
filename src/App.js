@@ -11,6 +11,7 @@ import Chat from "./components/Chat/Chat";
 // import BeepVideoCall from "./components/Video Metting Screen/BeepVideoCall";
 import Profile from "./components/Video Call/Profile";
 import './style.css'
+import Setting from "./components/Video Call/Setting";
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path="/vc" element={<VideoCall />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="setting" element={<Setting />} />
           </Route>
           <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />

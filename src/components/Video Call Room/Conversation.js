@@ -920,6 +920,10 @@ function Conversation(props) {
                     { urls: 'stun:stun1.l.google.com:19302' }
                 ]
             },
+            offerOptions: {
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true
+            },
             stream
         });
 
@@ -949,52 +953,54 @@ function Conversation(props) {
             {room_id && (
                 <>
 
-                    {
-                        peers &&
-                        < VideoConference
-                            room_id={room_id}
-                            username={username}
-                            localVideoRef={localVideoRef}
-                            isVideoMuted={isVideoMuted}
-                            isAudioMuted={isAudioMuted}
-                            sendMessage={sendMessage}
-                            toggleVideoMute={toggleVideoMute}
-                            toggleAudioMute={toggleAudioMute}
-                            peers={peers}
-                            handleLeaveRoom={handleLeaveRoom}
-                            messageList={messageList}
-                            setMessageList={setMessageList}
-                            userMessage={userMessage}
-                            setUserMessage={setUserMessage}
-                            setScreenShare={setScreenShare}
-                            screenShare={screenShare}
-                            toggleScreenRecording={toggleScreenRecording}
-                            setScreenRecording={setScreenRecording}
-                            screenRecording={screenRecording}
-                            handRaise={handRaise}
-                            setHandRaise={setHandRaise}
-                            toggleHandRaise={toggleHandRaise}
-                            inMeetingNotification={inMeetingNotification}
-                            setInMeetingNotification={setInMeetingNotification}
-                            handRaiseList={handRaiseList}
-                            setHandRaiseList={setHandRaiseList}
-                            handleHandRaise={handleHandRaise}
-                            setIsHost={setIsHost}
-                            isHost={isHost}
-                            muteUserMic={muteUserMic}
-                            muteUserVideo={muteUserVideo}
-                            kickUser={kickUser}
-                            promoteToHost={promoteToHost}
-                            demoteToViewer={demoteToViewer}
-                            activePopupIndex={activePopupIndex}
-                            setActivePopupIndex={setActivePopupIndex}
-                            isOwner={isOwner}
-                            setIsOwner={setIsOwner}
-                            endMeetingForAll={endMeetingForAll}
-                            muteAllVideo={muteAllVideo}
-                            muteAllMic={muteAllMic}
-                        />
-                    }
+                    {/* {
+                        peers && */}
+                    < VideoConference
+                        room_id={room_id}
+                        username={username}
+                        localVideoRef={localVideoRef}
+                        isVideoMuted={isVideoMuted}
+                        isAudioMuted={isAudioMuted}
+                        sendMessage={sendMessage}
+                        toggleVideoMute={toggleVideoMute}
+                        toggleAudioMute={toggleAudioMute}
+                        peers={peers}
+                        handleLeaveRoom={handleLeaveRoom}
+                        messageList={messageList}
+                        setMessageList={setMessageList}
+                        userMessage={userMessage}
+                        setUserMessage={setUserMessage}
+                        setScreenShare={setScreenShare}
+                        screenShare={screenShare}
+                        toggleScreenRecording={toggleScreenRecording}
+                        setScreenRecording={setScreenRecording}
+                        screenRecording={screenRecording}
+                        handRaise={handRaise}
+                        setHandRaise={setHandRaise}
+                        toggleHandRaise={toggleHandRaise}
+                        inMeetingNotification={inMeetingNotification}
+                        setInMeetingNotification={setInMeetingNotification}
+                        handRaiseList={handRaiseList}
+                        setHandRaiseList={setHandRaiseList}
+                        handleHandRaise={handleHandRaise}
+                        setIsHost={setIsHost}
+                        isHost={isHost}
+                        muteUserMic={muteUserMic}
+                        muteUserVideo={muteUserVideo}
+                        kickUser={kickUser}
+                        promoteToHost={promoteToHost}
+                        demoteToViewer={demoteToViewer}
+                        activePopupIndex={activePopupIndex}
+                        setActivePopupIndex={setActivePopupIndex}
+                        isOwner={isOwner}
+                        setIsOwner={setIsOwner}
+                        endMeetingForAll={endMeetingForAll}
+                        muteAllVideo={muteAllVideo}
+                        muteAllMic={muteAllMic}
+                    />
+                    {/* } */}
+
+
 
                     {/* <div className="bg-green-100 p-3 rounded mt-4 flex justify-between items-center">
                         <p>Connected to Room:
@@ -1104,8 +1110,8 @@ function Conversation(props) {
                                 )
                             })}
                         </div>
-                    </div > */
-                    }
+                    </div > */}
+
                 </>
             )}
         </div >
