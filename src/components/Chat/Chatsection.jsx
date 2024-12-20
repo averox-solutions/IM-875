@@ -210,6 +210,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import { IoCallSharp } from "react-icons/io5";
+import { MdVideoCall } from "react-icons/md";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import { FaSearch } from "react-icons/fa";
+import { MdOutlineAddCircle } from "react-icons/md";
+import { IoMdSend } from "react-icons/io";
+
 
 const SERVER_URL = process.env.REACT_APP_SOCKET_URL;
 const token = localStorage.getItem("accessToken");
@@ -229,10 +236,10 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [selectedMessageId, setSelectedMessageId] = useState(null);
-    const [isSearchVisible, setSearchVisible] = useState(false);
-    const alphaId = currentUserInfo.currentUserId; // Alpha's user ID
-    const betaId = participantInfo.participantId; // Beta's user ID
+    const alphaId = currentUserInfo.currentUserId;
+    const betaId = participantInfo.participantId;
     const PAGE_SIZE = 20;
+
 
     useEffect(() => {
         const newSocket = io(`${SERVER_URL}/im`, { query: { token } });
@@ -313,7 +320,7 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
             // Update the local state for the sent message
             setMessages((prevMessages) => [...prevMessages, newMessage]);
             setVisibleMessages((prevVisible) => [...prevVisible, newMessage]);
-            // setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
+            setFilteredMessages((prevFiltered) => [...prevFiltered, newMessage]);
 
             // Clear the input field
             setMessage('');
@@ -384,11 +391,8 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
         };
 
         const handleDeleteMessage = (messageId) => {
-            // Implement your delete logic here
-            // This could involve calling a delete API or updating your messages state
+
             console.log(`Deleting message with ID: ${messageId}`);
-            // Example: 
-            // setFilteredMessages(filteredMessages.filter(msg => msg.id !== messageId));
         };
 
         let lastDate = null;
@@ -483,10 +487,13 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                 {/* Header Section */}
                 <div
                     style={{
-                        padding: "1%",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        padding: '1%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        gap: '873px'
                     }}
                 >
                     <div className="profile-pic">
@@ -516,28 +523,58 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                             <span>{participantInfo.name}</span>
                         </div>
                     </div>
-                  <div className="addons-class">
-                  <button
-                        style={{
-                            width: "4%",
-                            backgroundColor: "inherit",
-                            border: "none",
-                        }}
-                        onClick={handleSearchClick}
-                    >
-                        <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
-                    </button>
-                  <button
-                        style={{
-                            width: "4%",
-                            backgroundColor: "inherit",
-                            border: "none",
-                        }}
-                        onClick={handleSearchClick}
-                    >
-                        <img style={{ width: "65%" }} src="/images/search.svg" alt="search" />
-                    </button>
-                  </div>
+                    <div className="addons-class" style={{
+                            display: "flex",
+                            aligncontent: "center",
+                            justifycontent: "center",
+                            alignitems: "center",
+                            fontsize: "smaller",
+                    }}>
+                        <button
+                            style={{
+                                width: "25%",
+                                backgroundColor: "inherit",
+                                border: "none",
+                                fontSize: "larger"
+                            }}
+                            onClick={handleSearchClick}
+                        >
+                            <MdVideoCall />
+                        </button>
+                        <button
+                            style={{
+                                width: "25%",
+                                backgroundColor: "inherit",
+                                border: "none",
+                                fontSize: "larger"
+                            }}
+                            onClick={handleSearchClick}
+                        >
+                            <IoCallSharp />
+                        </button>
+                        <button
+                            style={{
+                                width: "25%",
+                                backgroundColor: "inherit",
+                                border: "none",
+                                fontSize: "larger"
+                            }}
+                            onClick={handleSearchClick}
+                        >
+                            <FaSearch />
+                        </button>
+                        <button
+                            style={{
+                                width: "25%",
+                                backgroundColor: "inherit",
+                                border: "none",
+                                fontSize: "larger"
+                            }}
+                            onClick={handleSearchClick}
+                        >
+                            <HiOutlineDotsVertical />
+                        </button>
+                    </div>
                 </div>
                 {/* Overlay */}
                 {isOverlayVisible && (
@@ -673,8 +710,12 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                     border: 'none',
                     background: '#F0F2F5',
                     fontSize: '2em',
+                    display: "flex",
+                    aligncontent: "center",
+                    justifycontent: "center",
+                    alignitems: "center",
                 }}>
-                    +
+                    <MdOutlineAddCircle />
                 </button>
                 <input
                     className="text-input"
@@ -703,9 +744,12 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                     alignItems: 'center',
                     backgroundColor: 'initial',
                     border: 'none',
-                    width: "5%"
+                    width: "5%",
+                    fontsize: "xx-large",
+
+
                 }}>
-                    <img src="/images/send (2).svg" style={{ width: "55%" }} alt="" />
+                    <IoMdSend />
                 </button>
             </div>
 

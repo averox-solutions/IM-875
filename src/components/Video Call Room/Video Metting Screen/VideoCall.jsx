@@ -83,55 +83,59 @@ const VideoCall = (props) => {
     <div
       id="vc_participants_master"
     >
-      <div
-        className="vc_participants_item"
+
+      <div className={`${(peers.length > 0 && peers.length < 2) ? "vc_participants_ite_float" : "vc_participants_container"}`}
       >
-        <div className="vc_participants_ite_name">
-          {username}
-        </div>
-        {isVideoMuted && (
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: 'rgb(50,50,50)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            zIndex: "1"
-          }}>
-            <HiVideoCameraSlash style={{ color: "white", fontSize: "30px", minWidth: "30px" }} />
+        <div className='vc_participants_item' >
+          <div className="vc_participants_ite_name">
+            {username}
           </div>
-        )}
-        {isAudioMuted && (
-          <IoMdMicOff style={{
-            position: "absolute",
-            bottom: "10px",
-            right: "10px",
-            zIndex: "3",
-            color: "rgb(255,255,255)",
-            fontSize: "20px",
-            minWidth: "20px"
-          }} />
-        )}
-        <span className="vc_participants_ite_loader"></span>
-        <video
-          className="vc_participants_ite_vid"
-          ref={localVideoRef}
-          autoPlay
-          muted
-          style={{
-            width: '100%',
-            height: "100%",
-            objectFit: 'cover',
-            transform: 'scaleX(-1)'
-          }}
-        />
+          {isVideoMuted && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: 'rgb(50,50,50)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              zIndex: "1"
+            }}>
+              <HiVideoCameraSlash style={{ color: "white", fontSize: "30px", minWidth: "30px" }} />
+            </div>
+          )}
+          {isAudioMuted && (
+            <IoMdMicOff style={{
+              position: "absolute",
+              bottom: "10px",
+              right: "10px",
+              zIndex: "3",
+              color: "rgb(255,255,255)",
+              fontSize: "20px",
+              minWidth: "20px"
+            }} />
+          )}
+          <span className="vc_participants_ite_loader"></span>
+          <video
+            className="vc_participants_ite_vid"
+            ref={localVideoRef}
+            autoPlay
+            muted
+            style={{
+              width: '100%',
+              height: "100%",
+              objectFit: 'cover',
+              transform: 'scaleX(-1)'
+            }}
+          />
+        </div>
       </div>
 
       {peers?.map(({ peer, peer_id, username, audioMuted, videoMuted }) => {
         return (
-          <RemotePeer peerID={peer_id} key={peer_id} audioMuted={audioMuted} peer={peer} username={username} videoMuted={videoMuted} />
+          <div className="vc_participants_container" key={peer_id}>
+            <RemotePeer peerID={peer_id} key={peer_id} audioMuted={audioMuted} peer={peer} username={username} videoMuted={videoMuted} />
+          </div>
         )
       })}
 

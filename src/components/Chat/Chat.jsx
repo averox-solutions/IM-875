@@ -3,6 +3,9 @@ import "./chat.css";
 import { FaSearch } from "react-icons/fa";
 import Chatsection from "./Chatsection";
 import AppContext from "../AppContext";
+import { GrHomeRounded } from "react-icons/gr";
+import { IoAddSharp } from "react-icons/io5";
+import { CiLogout } from "react-icons/ci";
 
 const departments = [
   { name: 'Human Resources' },
@@ -19,6 +22,8 @@ const Chat = () => {
   const [selectedChatId, setSelectedChatId] = useState(null); // Store the selected chatroom's ID
   const [userInfo, setUserInfo] = useState(null);
   const [participantInfo, setParticipantInfo] = useState(null);
+  const [searchResults, setSearchResults] = useState([]); 
+  const token=localStorage.getItem("accessToken");
 
   // Fetch chatrooms when the component mounts
   useEffect(() => {
@@ -27,7 +32,7 @@ const Chat = () => {
       console.log(chatrooms);
     };
     getChatrooms();
-  }, [fetchChatrooms]);
+  }, [fetchChatrooms,chatrooms]);
 
   // Update filtered chats when chatrooms data changes
   useEffect(() => {
@@ -63,12 +68,52 @@ const Chat = () => {
       setUserInfo(JSON.parse(storedUserInfo));
     }
   }, []);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (input.trim() === "") {
+        setSearchResults([]);
+        return;
+      }
+
+      try {
+        const url = `http://localhost:8000/im/users/search?query=${encodeURIComponent(input)}`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch search results:", response.status);
+          return;
+        }
+
+        const data = await response.json();
+        console.log("Fetched search data:", data);
+
+        // Assuming data.users is the correct structure
+        if (Array.isArray(data.users)) {
+          setSearchResults(data.users);
+        } else if (Array.isArray(data)) {
+          setSearchResults(data);
+        } else {
+          setSearchResults([]);
+        }
+      } catch (error) {
+        console.error("Error fetching user search results:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [input, token]);
 
   const handleToggle = (option) => {
     setActive(option);
   };
 
-  const handleChatClick = (chatId) => {
+const handleChatClick = (chatId) => {
     const selectedChat = chatrooms.find((chat) => chat.chatId === chatId);
     if (selectedChat) {
       const participantInfo = {
@@ -109,11 +154,7 @@ const Chat = () => {
             <div className="_home_department_section">
               <div className="home_button_chat">
                 <button className="_home_button">
-                  <img
-                    className="chat_saprator_home_button"
-                    src="/images/home-icon.svg"
-                    alt="home-icon"
-                  />
+                <GrHomeRounded />
                 </button>
               </div>
               <div className="section-list-department" style={styles.list}>
@@ -131,11 +172,7 @@ const Chat = () => {
               </div>
               <div className="home_button_chat">
                 <button className="_home_button">
-                  <img
-                    className="chat_saprator_home_button"
-                    src="/images/plus-icon.svg"
-                    alt="home-icon"
-                  />
+                <IoAddSharp />
                 </button>
               </div>
               <div className="bottom_logout_button">
@@ -147,17 +184,11 @@ const Chat = () => {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
+                    fontsize: "x-large",
+                    fontweight: "bolder",
                   }}
                 >
-                  <img
-                    src="./images/Logout_button.svg"
-                    alt="Logout"
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      display: "block",
-                    }}
-                  />
+                 <CiLogout />
                 </button>
               </div>
             </div>
@@ -189,56 +220,83 @@ const Chat = () => {
               </div>
             </div>
             <div className="chats-user-container">
-              {active === "chats" ? (
-                filteredChats.length > 0 ? (
-                  filteredChats.map((chatroom) => (
-                    <div
-                      key={chatroom.chatId}
-                      className={`user-container ${
-                        chatroom.chatId === selectedChatId ? "active-chat" : ""
-                      }`}
-                      onClick={() => handleChatClick(chatroom.chatId)} // Handle chat selection
-                    >
-                      <div className="userinfo">
-                        <img
-                          src="images/dp.jpg"
-                          alt={chatroom.participant.name}
-                          className="profile-pic"
-                        />
-                        <div className="username">
-                          <span className="name">{chatroom.participant.name}</span>
-                          <div className="text-container">
-                            <span className="last-message">
-                              {chatroom.lastMessage.message}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="time">
-                        <span>{chatroom.lastMessage.sentAt}</span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-chat">
-                    <img
-                      src="./images/illustration.svg"
-                      className="img-right"
-                      alt=""
-                    />
-                    <p>No chats available</p>
-                  </div>
-                )
-              ) : (
-                <div className="no-chat">
-                  <img
-                    src="./images/illustration.svg"
-                    className="img-right"
-                    alt=""
-                  />
-                </div>
-              )}
+  {input.trim() !== "" ? (
+    // If the user typed something, show search results in the chat container
+    searchResults.length > 0 ? (
+      searchResults.map((user) => (
+        <div key={user.id} className="user-container">
+          <div className="userinfo">
+            <img
+              src={user.profilePic || "images/dp.jpg"} 
+              alt={user.username}
+              className="profile-pic"
+            />
+            <div className="username">
+              <span className="name">{user.username}</span>
             </div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div className="no-chat">
+        <p>No users found.</p>
+      </div>
+    )
+  ) : (
+    // If the input is empty
+    active === "chats" ? (
+      filteredChats && filteredChats.length > 0 ? (
+        filteredChats.map((chatroom) => (
+          <div
+            key={chatroom.chatId}
+            className={`user-container ${
+              chatroom.chatId === selectedChatId ? "active-chat" : ""
+            }`}
+            onClick={() => handleChatClick(chatroom.chatId)}
+          >
+            <div className="userinfo">
+              <img
+                src={chatroom.participant.profilePic}
+                alt={chatroom.participant.name}
+                className="profile-pic"
+              />
+              <div className="username">
+                <span className="name">{chatroom.participant.name}</span>
+                <div className="text-container">
+                  <span className="last-message">
+                    {chatroom.lastMessage.message}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="time">
+              <span>{chatroom.lastMessage.sentAt}</span>
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="no-chat">
+          <img
+            src="./images/illustration.svg"
+            className="img-right"
+            alt=""
+          />
+          <p>No chats available</p>
+        </div>
+      )
+    ) : (
+      // If active is not "chats"
+      <div className="no-chat">
+        <img
+          src="./images/illustration.svg"
+          className="img-right"
+          alt=""
+        />
+      </div>
+    )
+  )}
+</div>
+
           </div>
         </div>
       </div>
@@ -295,7 +353,176 @@ const styles = {
     fontWeight: "600", // Corrected "fontweight" to "fontWeight"
     fontSize: "20px", // Corrected "fontsize" to "fontSize"
     textTransform: "uppercase", // Corrected "texttransform" to "textTransform"
-    flexDirection: "column", 
+    flexDirection: "column",
   },
 };
+
+// import React, { useState, useEffect, useContext } from "react";
+// import "./chat.css";
+// import { FaSearch } from "react-icons/fa";
+// import Chatsection from "./Chatsection";
+// import AppContext from "../AppContext";
+
+// const Chat = () => {
+//   const { fetchChatrooms, chatrooms, chatroomsError } = useContext(AppContext);
+//   const [input, setInput] = useState("");
+//   const [searchResults, setSearchResults] = useState([]); 
+//   const [filteredChats, setFilteredChats] = useState([]);
+//   const SERVER_URL = process.env.REACT_APP_REST_URL;
+//   const token = localStorage.getItem("accessToken");
+
+//   // Fetch chatrooms when component mounts
+//   useEffect(() => {
+//     const getChatrooms = async () => {
+//       await fetchChatrooms();
+//     };
+//     getChatrooms();
+//   }, [fetchChatrooms]);
+
+//   // Update filtered chats when chatrooms data changes
+//   useEffect(() => {
+//     if (chatrooms) {
+//       setFilteredChats(chatrooms);
+//     }
+//   }, [chatrooms]);
+
+//   // Filter local chatrooms based on input if no remote search is needed
+//   useEffect(() => {
+//     if (chatrooms && input.trim() === "") {
+//       // If input is empty, show all chatrooms
+//       setFilteredChats(chatrooms);
+//     } else if (chatrooms && input.trim() !== "") {
+//       // If you still want local filtering even while searching:
+//       const filtered = chatrooms.filter(
+//         (chatroom) =>
+//           chatroom.participant.name
+//             .toLowerCase()
+//             .includes(input.toLowerCase()) ||
+//           chatroom.lastMessage.message
+//             .toLowerCase()
+//             .includes(input.toLowerCase())
+//       );
+//       setFilteredChats(filtered);
+//     }
+//   }, [input, chatrooms]);
+
+//   // Fetch users from the server when input changes (for remote search)
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//       if (input.trim() === "") {
+//         setSearchResults([]);
+//         return;
+//       }
+
+//       try {
+//         const url = `http://localhost:8000/im/users/search?query=${encodeURIComponent(input)}`;
+//         const response = await fetch(url, {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+
+//         if (!response.ok) {
+//           console.error("Failed to fetch search results:", response.status);
+//           return;
+//         }
+
+//         const data = await response.json();
+//         console.log("Fetched search data:", data);
+
+//         // Assuming data.users is the correct structure
+//         if (Array.isArray(data.users)) {
+//           setSearchResults(data.users);
+//         } else if (Array.isArray(data)) {
+//           setSearchResults(data);
+//         } else {
+//           setSearchResults([]);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching user search results:", error);
+//       }
+//     };
+
+//     fetchUsers();
+//   }, [input, token, SERVER_URL]);
+
+//   return (
+//     <div className="search-container">
+//       <div className="input-wrapper">
+//         <FaSearch id="search-icon" />
+//         <input
+//           className="input"
+//           placeholder="Type to search..."
+//           value={input}
+//           onChange={(e) => setInput(e.target.value)}
+//         />
+//       </div>
+
+//       {/* 
+//         Instead of showing searchResults here, we will integrate them into the main chat container.
+//         So just remove the search-results div from here.
+//       */}
+      
+//       <div className="chats-user-container">
+//         {input.trim() !== "" ? (
+//           // If the user typed something, show search results in the chat container
+//           searchResults.length > 0 ? (
+//             searchResults.map((user) => (
+//               <div key={user.id} className="user-container">
+//                 <div className="userinfo">
+//                   <img
+//                     src={user.profilePic || "images/dp.jpg"} 
+//                     alt={user.username}
+//                     className="profile-pic"
+//                   />
+//                   <div className="username">
+//                     <span className="name">{user.username}</span>
+//                   </div>
+//                 </div>
+//               </div>
+//             ))
+//           ) : (
+//             <div className="no-chat">
+//               <p>No users found.</p>
+//             </div>
+//           )
+//         ) : (
+//           // If the input is empty, show the original filtered chats
+//           filteredChats && filteredChats.length > 0 ? (
+//             filteredChats.map((chatroom) => (
+//               <div key={chatroom.chatId} className="user-container">
+//                 <div className="userinfo">
+//                   <img
+//                     src={chatroom.participant.profilePic}
+//                     alt={chatroom.participant.name}
+//                     className="profile-pic"
+//                   />
+//                   <div className="username">
+//                     <span className="name">{chatroom.participant.name}</span>
+//                     <div className="text-container">
+//                       <span className="last-message">
+//                         {chatroom.lastMessage.message}
+//                       </span>
+//                     </div>
+//                   </div>
+//                 </div>
+//                 <div className="time">
+//                   <span>{chatroom.lastMessage.sentAt}</span>
+//                 </div>
+//               </div>
+//             ))
+//           ) : (
+//             <div className="no-chat">
+//               <p>No chats available</p>
+//             </div>
+//           )
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Chat;
 

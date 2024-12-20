@@ -118,24 +118,23 @@ const VideoConference = (props) => {
         }}>
           <IoIosCopy id='vc_head_copy_icon' />
         </div>
-
-
-        <div className="vc_participants_moda_master">
-          {inMeetingNotification.trim() !== '' && <div className="vc_participants_modal">
-            <BiSolidBellRing className="vc_participants_moda_icon" />
-            <span className="vc_participants_moda_span">{inMeetingNotification}</span>
-          </div>
-          }
-          {handRaiseList.map((data, index) => {
-            return (
-              <div key={index} className="vc_participants_modal">
-                <IoHandRightSharp className="vc_participants_moda_hand" />
-                <span className="vc_participants_moda_span">{data.username} has raised their hand</span>
-              </div>
-            )
-          })}
-        </div>
       </div> */}
+
+      <div className="vc_participants_moda_master">
+        {inMeetingNotification.trim() !== '' && <div className="vc_participants_modal">
+          <BiSolidBellRing className="vc_participants_moda_icon" />
+          <span className="vc_participants_moda_span">{inMeetingNotification}</span>
+        </div>
+        }
+        {handRaiseList.map((data, index) => {
+          return (
+            <div key={index} className="vc_participants_modal">
+              <IoHandRightSharp className="vc_participants_moda_hand" />
+              <span className="vc_participants_moda_span">{data.username} has raised their hand</span>
+            </div>
+          )
+        })}
+      </div>
 
       <div className="vc_participant_controls">
         <div className="vc_participant_control_child">
@@ -378,13 +377,13 @@ const VideoConference = (props) => {
           </>
         ) : (
           <div className="chat_participants_body_master">
-            <h1 className="chat_participants_body_h1">Participants List</h1>
+            {/* <h1 className="chat_participants_body_h1">Participants List</h1> */}
             <div className="chat_participants_body_participants_master">
               <span className="chat_participants_body_item">
                 <span>
                   {username}
-                  {isOwner && isHost && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>OWNER</span>}
-                  {isHost && !isOwner && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>HOST</span>}
+                  {isOwner && isHost && <span style={{ marginLeft: "7px", fontWeight: "600", fontSize: "10px", color: "var(--btn-primary)" }}>OWNER</span>}
+                  {isHost && !isOwner && <span style={{ marginLeft: "7px", fontWeight: "600", fontSize: "10px", color: "var(--btn-primary)" }}>HOST</span>}
                 </span>
               </span>
               {peers?.map((data, index) => {
@@ -395,8 +394,8 @@ const VideoConference = (props) => {
                     onClick={(e) => e.stopPropagation()}>
                     <span>
                       {data.username}
-                      {data.is_owner && data.is_host && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>OWNER</span>}
-                      {data.is_host && !data.is_owner && <span style={{ marginLeft: "7px", fontWeight: "900", fontSize: "10px", opacity: "0.3" }}>HOST</span>}
+                      {data.is_owner && data.is_host && <span style={{ marginLeft: "7px", fontWeight: "600", fontSize: "10px", color: "var(--btn-primary)" }}>OWNER</span>}
+                      {data.is_host && !data.is_owner && <span style={{ marginLeft: "7px", fontWeight: "600", fontSize: "10px", color: "var(--btn-primary)" }}>HOST</span>}
                     </span>
                     {((isHost && !data.is_owner && !data.is_host) || (isOwner)) &&
                       <div onClick={() => {
