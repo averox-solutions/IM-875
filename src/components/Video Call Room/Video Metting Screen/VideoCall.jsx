@@ -61,6 +61,11 @@ const VideoCall = (props) => {
     toggleAudioMute,
     peers,
     handleLeaveRoom,
+    screenStream,
+    setScreenStream,
+    screenPeers,
+    setScreenPeers,
+    screenPeerRef,
   } = props
 
   const [activeTab, setActiveTab] = useState("chats");
@@ -83,6 +88,18 @@ const VideoCall = (props) => {
     <div
       id="vc_participants_master"
     >
+      {/* <div className="vc_participants_container">
+
+        <video
+          id="screen-share-video"
+          autoPlay
+          playsInline
+          style={{
+            display: screenPeerRef.current ? 'block' : 'none',
+            // Add your styling here
+          }}
+        />
+      </div> */}
 
       <div className={`${(peers.length > 0 && peers.length < 2) ? "vc_participants_ite_float" : "vc_participants_container"}`}
       >
@@ -131,13 +148,15 @@ const VideoCall = (props) => {
         </div>
       </div>
 
-      {peers?.map(({ peer, peer_id, username, audioMuted, videoMuted }) => {
-        return (
-          <div className="vc_participants_container" key={peer_id}>
-            <RemotePeer peerID={peer_id} key={peer_id} audioMuted={audioMuted} peer={peer} username={username} videoMuted={videoMuted} />
-          </div>
-        )
-      })}
+      {
+        peers?.map(({ peer, peer_id, username, audioMuted, videoMuted }) => {
+          return (
+            <div className="vc_participants_container" key={peer_id}>
+              <RemotePeer peerID={peer_id} key={peer_id} audioMuted={audioMuted} peer={peer} username={username} videoMuted={videoMuted} />
+            </div>
+          )
+        })
+      }
 
 
 
@@ -253,7 +272,7 @@ const VideoCall = (props) => {
           <CallEnd />
         </IconButton>
       </div> */}
-    </div>
+    </div >
   );
 };
 

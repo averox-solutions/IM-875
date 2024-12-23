@@ -16,6 +16,7 @@ function Conversation(props) {
     const location = useLocation();
     const isFirstRender = useRef(true);
     const [searchParams, setSearchParams] = useSearchParams();
+    const screenShareRef = useRef(null);
     const {
         room_id,
         socket,
@@ -48,6 +49,11 @@ function Conversation(props) {
         isHost,
         isOwner,
         setIsOwner,
+        screenStream,
+        setScreenStream,
+        screenPeers,
+        setScreenPeers,
+        screenPeerRef,
     } = props;
     const [userMessage, setUserMessage] = useState('')
     const notificationTimeoutRef = useRef(null);
@@ -566,6 +572,15 @@ function Conversation(props) {
             });
         });
 
+        socket.on('user_joined_signal_ss_peer', (data) => {
+            const peer = addScreenSharePeer(data.signal, data.new_user_socket_id, screenStream)
+            setScreenPeers({
+                peer_id: data.new_user_socket_id,
+                username: data.username,
+                peer
+            });
+        });
+
         socket.on('user_joined_signal', (data) => {
             const peer = addPeer(data.signal, data.new_user_socket_id, localStream)
             setPeers(users => [...users, {
@@ -678,6 +693,35 @@ function Conversation(props) {
             }, 3000);
         });
 
+        socket.on('user_screen_sharing', ({ signal, screensharer_id, username }) => {
+            const screenPeer = addScreenSharePeer(signal, screensharer_id);
+            screenPeerRef.current = screenPeer;
+            setInMeetingNotification(`${username} started sharing their screen`);
+        });
+
+        socket.on('receiving_returned_screen_signal', ({ signal, screensharer_id }) => {
+            const screenPeer = screenPeers.find(p => p.peer_id === screensharer_id);
+            if (screenPeer) {
+                screenPeer.peer.signal(signal);
+            }
+        });
+
+        socket.on('user_stopped_screen_sharing', ({ username, screenshare_peer_id }) => {
+            // Clean up screen share peer if it exists
+            if (screenPeerRef.current) {
+                screenPeerRef.current.destroy();
+                screenPeerRef.current = null;
+            }
+
+            // Clear the screen share video
+            const screenVideoElement = document.getElementById('screen-share-video');
+            if (screenVideoElement) {
+                screenVideoElement.srcObject = null;
+            }
+
+            setInMeetingNotification(`${username} stopped sharing their screen`);
+        });
+
         // Cleanup on component unmount
         return () => {
             socket.off('receive_message');
@@ -685,6 +729,19 @@ function Conversation(props) {
             socket.off('user_left');
             socket.off('user_joined_signal');
             socket.off('receiving_returned_signal');
+            socket.off('user_screen_sharing');
+            socket.off('receiving_returned_screen_signal');
+            socket.off('user_stopped_screen_sharing');
+
+            if (screenStream) {
+                screenStream.getTracks().forEach(track => track.stop());
+            }
+            if (screenPeerRef.current) {
+                screenPeerRef.current.destroy();
+            }
+            screenPeers.forEach(({ peer }) => {
+                if (peer) peer.destroy();
+            });
 
             setIsHost(false);
             setIsOwner(false);
@@ -948,6 +1005,152 @@ function Conversation(props) {
         return peer;
     }
 
+
+    const stopScreenShare = () => {
+        try {
+            // Stop all tracks in the screen stream
+            if (screenStream) {
+                screenStream.getTracks().forEach(track => track.stop());
+                setScreenStream(null);
+            }
+
+            // Clean up screen share peer connections
+            screenPeers.forEach(({ peer }) => {
+                if (peer) {
+                    peer.destroy();
+                }
+            });
+            setScreenPeers([]);
+
+            // Emit screen share stopped event
+            socket.emit('screen_share_stopped', {
+                room_id,
+                username,
+                screenshare_peer_id: socket.id + '_screen'
+            });
+
+            setScreenShare(false);
+        } catch (error) {
+            console.error('Error stopping screen share:', error);
+            setScreenShare(false);
+        }
+    };
+
+    const createScreenSharePeer = (socket_id, new_user_socket_id, stream) => {
+        const peer = new Peer({
+            initiator: true,
+            trickle: false,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            },
+            offerOptions: {
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true
+            },
+            stream
+        });
+
+        peer.on('signal', signal => {
+            socket.emit('sending_signal_ss_peer', {
+                username: username,
+                socket_id: socket_id,
+                new_user_socket_id: new_user_socket_id,
+                signal: signal,
+            });
+        });
+
+        return peer;
+    };
+
+    const addScreenSharePeer = (incomingSignal, screensharer_id) => {
+        const peer = new Peer({
+            initiator: false,
+            trickle: false,
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ]
+            }
+        });
+
+        peer.on('signal', signal => {
+            socket.emit('returning_screen_signal', {
+                signal,
+                screensharer_id
+            });
+        });
+
+        peer.on('stream', stream => {
+            screenShareRef.current.srcObject = stream;
+        });
+
+        peer.signal(incomingSignal);
+        return peer;
+    };
+
+    const startScreenShare = async () => {
+        try {
+            // Get screen sharing stream
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: true
+            });
+
+            setScreenStream(stream);
+            setScreenShare(true);
+
+            peers.forEach(({ peer_id }) => {
+                createScreenSharePeer(peer_id, socket.id, stream);
+            });
+
+            const myScreenPeer = new Peer({
+                initiator: true,
+                trickle: false,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                },
+                offerOptions: {
+                    offerToReceiveAudio: true,
+                    offerToReceiveVideo: true
+                },
+                stream
+            });
+
+            setScreenPeers({
+                peer_id: socket.id,
+                username: username,
+                myScreenPeer
+            });
+
+            // Handle stream ending (user clicks "Stop Sharing")
+            stream.getVideoTracks()[0].onended = () => {
+                stopScreenShare();
+            };
+
+        } catch (error) {
+            console.error('Error starting screen share:', error);
+            alert('Failed to start screen sharing');
+        }
+    };
+
+
+    const toggleScreenShare = () => {
+        setScreenShare(!screenShare);
+        if (screenShare) {
+            stopScreenShare()
+        }
+        else {
+            startScreenShare()
+        }
+    };
+
     return (
         <div>
             {room_id && (
@@ -972,6 +1175,7 @@ function Conversation(props) {
                         setUserMessage={setUserMessage}
                         setScreenShare={setScreenShare}
                         screenShare={screenShare}
+                        toggleScreenShare={toggleScreenShare}
                         toggleScreenRecording={toggleScreenRecording}
                         setScreenRecording={setScreenRecording}
                         screenRecording={screenRecording}
@@ -997,6 +1201,11 @@ function Conversation(props) {
                         endMeetingForAll={endMeetingForAll}
                         muteAllVideo={muteAllVideo}
                         muteAllMic={muteAllMic}
+                        screenStream={screenStream}
+                        setScreenStream={setScreenStream}
+                        screenPeers={screenPeers}
+                        setScreenPeers={setScreenPeers}
+                        screenPeerRef={screenPeerRef}
                     />
                     {/* } */}
 

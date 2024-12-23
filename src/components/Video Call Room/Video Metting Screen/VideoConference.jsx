@@ -32,6 +32,7 @@ const VideoConference = (props) => {
     setScreenShare,
     screenShare,
     peers,
+    toggleScreenShare,
     handleLeaveRoom,
     messageList,
     setMessageList,
@@ -60,7 +61,12 @@ const VideoConference = (props) => {
     setIsOwner,
     endMeetingForAll,
     muteAllVideo,
-    muteAllMic
+    muteAllMic,
+    screenStream,
+    setScreenStream,
+    screenPeers,
+    setScreenPeers,
+    screenPeerRef,
   } = props
 
   const [isSearchListVisible, setIsSearchListVisible] = useState(false);
@@ -81,11 +87,6 @@ const VideoConference = (props) => {
 
   const navigateTo = useNavigation();
 
-
-
-  const toggleScreenShare = () => {
-    setScreenShare(!screenShare);
-  };
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -257,6 +258,11 @@ const VideoConference = (props) => {
         toggleAudioMute={toggleAudioMute}
         peers={peers}
         handleLeaveRoom={handleLeaveRoom}
+        screenStream={screenStream}
+        setScreenStream={setScreenStream}
+        screenPeers={screenPeers}
+        setScreenPeers={setScreenPeers}
+        screenPeerRef={screenPeerRef}
       />
 
       <div id="chat_and_participants_master">
