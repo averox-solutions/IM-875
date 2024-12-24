@@ -215,7 +215,11 @@ import { MdVideoCall } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
 import { MdOutlineAddCircle } from "react-icons/md";
-import { IoMdSend } from "react-icons/io";
+import { IoMdSend, IoMdAttach } from 'react-icons/io';
+import EmojiPicker from 'emoji-picker-react';
+import { MdEmojiEmotions } from "react-icons/md";
+import ZegoExpressEngine from 'zego-express-engine-webrtc';
+
 
 
 const SERVER_URL = process.env.REACT_APP_SOCKET_URL;
@@ -230,27 +234,32 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
     const [activeConversationId, setActiveConversationId] = useState(null);
     const [isTyping, setIsTyping] = useState(false);
     const [offset, setOffset] = useState(0);
+    const [file, setFile] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
     const chatRef = useRef(null);
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [selectedMessageId, setSelectedMessageId] = useState(null);
+    const [showFileInput, setShowFileInput] = useState(false); 
     const alphaId = currentUserInfo.currentUserId;
     const betaId = participantInfo.participantId;
+    
     const PAGE_SIZE = 20;
-
-
     useEffect(() => {
+        if (!betaId) return;  // Prevent running if betaId is not set
+    
         const newSocket = io(`${SERVER_URL}/im`, { query: { token } });
-        setSocket(newSocket);
-
+        setSocket(newSocket);  // Store the socket connection
+    
+        // Socket connection established
         newSocket.on('connect', () => {
             console.log('Connected to server');
             newSocket.emit('checkConversation', { participantId: betaId });
         });
-
-        newSocket.on('conversationCheckResponse', (data) => {
+    
+        // Handle existing conversation or create a new one
+        const handleConversationResponse = (data) => {
             if (data.exists) {
                 setActiveConversationId(data.conversationId);
                 setMessages(data.messages || []);
@@ -261,33 +270,53 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
             } else {
                 newSocket.emit('createConversation', { participantId: betaId });
             }
-        });
-
-        newSocket.on('chatRoomCreated', (conversationId) => {
+        };
+    
+        // Room created event
+        const handleChatRoomCreated = (conversationId) => {
             setActiveConversationId(conversationId);
             newSocket.emit('joinRoom', conversationId);
-        });
-
-        newSocket.on('receiveMessage', (msg) => {
+        };
+    
+        // Message received event
+        const handleReceiveMessage = (msg) => {
             setMessages((prevMessages) => [...prevMessages, msg]);
             setVisibleMessages((prevVisible) => [...prevVisible, msg]);
             setFilteredMessages((prevFiltered) => [...prevFiltered, msg]);
             newSocket.emit('isDelivered', msg.messageId);
             newSocket.emit('markAsSeen', msg.messageId);
-        });
-
-        newSocket.on('Typing', () => {
+        };
+    
+        // Typing event
+        const handleTyping = () => {
             setIsTyping(true);
             setTimeout(() => setIsTyping(false), 2000);
-        });
-
-        return () => {
-            newSocket.disconnect();
         };
-    }, [betaId]); // Ensure that useEffect is called unconditionally with all dependencies
-
+    
+        // Register socket listeners
+        newSocket.on('conversationCheckResponse', handleConversationResponse);
+        newSocket.on('chatRoomCreated', handleChatRoomCreated);
+        newSocket.on('receiveMessage', handleReceiveMessage);
+        newSocket.on('Typing', handleTyping);
+    
+        // Cleanup function
+        return () => {
+            if (newSocket) {
+                newSocket.off('conversationCheckResponse', handleConversationResponse);
+                newSocket.off('chatRoomCreated', handleChatRoomCreated);
+                newSocket.off('receiveMessage', handleReceiveMessage);
+                newSocket.off('Typing', handleTyping);
+                newSocket.disconnect();  // Disconnect old socket before reconnecting
+            }
+        };
+    }, [betaId]);  // Refresh socket on betaId change
+    
     const handleSearchClick = () => {
         setOverlayVisible(true); // Show the overlay
+    };
+    const onEmojiClick = (emojiData) => {
+        setMessage((prev) => prev + emojiData.emoji);
+        setShowPicker(false);
     };
 
     const closeOverlay = () => {
@@ -349,22 +378,7 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
         }
     };
 
-    const handleSearch = (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        setSearchQuery(query);
-
-        if (query === '') {
-            setFilteredMessages(visibleMessages);
-        } else {
-            setFilteredMessages(
-                visibleMessages.filter(
-                    (msg) =>
-                        (msg.message && msg.message.toLowerCase().includes(query)) ||
-                        (msg.senderId && msg.senderId.toLowerCase().includes(query))
-                )
-            );
-        }
-    };
+   
 
     const highlightText = (text, query) => {
         if (!query.trim()) return text;
@@ -474,12 +488,19 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
         });
     };
 
+    const handleFileChange = (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+        }
+    };
+
+
     useEffect(() => {
         if (isTyping) {
             console.log("User is typing...");
         }
     }, [isTyping]);
-
 
     return (
         <div style={{ maxWidth: '100%', fontFamily: 'poppins' }}>
@@ -524,18 +545,19 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
                         </div>
                     </div>
                     <div className="addons-class" style={{
-                            display: "flex",
-                            aligncontent: "center",
-                            justifycontent: "center",
-                            alignitems: "center",
-                            fontsize: "smaller",
+                        display: "flex",
+                        aligncontent: "center",
+                        justifycontent: "center",
+                        alignitems: "center",
+                        fontsize: "smaller",
                     }}>
                         <button
                             style={{
                                 width: "25%",
                                 backgroundColor: "inherit",
                                 border: "none",
-                                fontSize: "larger"
+                                fontSize: "x-large"
+                                
                             }}
                             onClick={handleSearchClick}
                         >
@@ -695,63 +717,110 @@ const ChatSection = ({ participantInfo, currentUserInfo }) => {
             </div>
 
             <div className="input-container" style={{
-                background: '#F0F2F5',
-                placeContent: 'center space-between',
-                flexDirection: 'row',
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'nowrap',
-                alignContent: 'center',
-                justifyContent: 'space-around',
-                height: '63px',
-            }}>
-                <button className="add" onClick={() => setShowPicker((val) => !val)} style={{
+            background: '#F0F2F5',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            height: '63px',
+            position: 'relative'
+        }}>
+            {/* Emoji Picker Button */}
+            <button className="add" onClick={() => setShowPicker((val) => !val)} 
+                style={{
                     marginRight: '10px',
                     border: 'none',
                     background: '#F0F2F5',
                     fontSize: '2em',
                     display: "flex",
-                    aligncontent: "center",
-                    justifycontent: "center",
-                    alignitems: "center",
+                    justifyContent: "center",
+                    alignItems: "center",
                 }}>
-                    <MdOutlineAddCircle />
-                </button>
-                <input
-                    className="text-input"
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            sendMessage();
-                        }
-                    }}
-                    placeholder="Type a message"
+                <MdEmojiEmotions />
+            </button>
+
+            {/* Emoji Picker Display */}
+            {showPicker && (
+                <div 
                     style={{
-                        flexGrow: 1,
-                        padding: '11px',
-                        border: 'none',
-                        borderRadius: '15px',
+                        position: 'absolute',
+                        bottom: "67px",
+                        left: "3px",
+                        zIndex: 1000
                     }}
-                />
-                <button className="send-button" onClick={sendMessage} style={{
-                    margin: '1%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: 'initial',
-                    border: 'none',
-                    width: "5%",
-                    fontsize: "xx-large",
+                >
+                    <EmojiPicker onEmojiClick={onEmojiClick} />
+                </div>
+            )}
 
-
+            {/* File Upload Overlay */}
+            {showFileInput && (
+                <div style={{
+                    position: 'absolute',
+                    bottom: "67px",  // Place above the input
+                    left: '3px',
+                    background: '#fff',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '10px',
+                    zIndex: 1000,
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)'
                 }}>
-                    <IoMdSend />
-                </button>
-            </div>
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        style={{
+                            fontSize: '1em',
+                            cursor: 'pointer'
+                        }}
+                    />
+                </div>
+            )}
+
+            {/* File Upload Trigger */}
+            <button onClick={() => setShowFileInput((val) => !val)} style={{
+                marginRight: '10px',
+                border: 'none',
+                background: '#F0F2F5',
+                fontSize: '2em',
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: 'pointer'
+            }}>
+                <IoMdAttach />
+            </button>
+
+            {/* Message Input */}
+            <input
+                className="text-input"
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        sendMessage();
+                    }
+                }}
+                placeholder="Type a message"
+                style={{
+                    flexGrow: 1,
+                    padding: '11px',
+                    border: 'none',
+                    borderRadius: '15px',
+                }}
+            />
+            {/* Send Button */}
+            <button className="send-button" onClick={sendMessage} 
+                style={{
+                    border: "none",
+                    fontSize: "xx-large",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                <IoMdSend />
+            </button>
+        </div>
 
         </div>
     );
