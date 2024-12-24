@@ -46,6 +46,10 @@ function Socket() {
     const [searchParams, setSearchParams] = useSearchParams();
     const room_id = searchParams.get("room_id")
 
+    const [screenStream, setScreenStream] = useState(null);
+    const [screenPeers, setScreenPeers] = useState([]);
+    const screenPeerRef = useRef(null);
+
 
     useEffect(() => {
         socket.on('vc_connected', (data) => {
@@ -98,6 +102,11 @@ function Socket() {
                     isHost={isHost}
                     isOwner={isOwner}
                     setIsOwner={setIsOwner}
+                    screenStream={screenStream}
+                    setScreenStream={setScreenStream}
+                    screenPeers={screenPeers}
+                    setScreenPeers={setScreenPeers}
+                    screenPeerRef={screenPeerRef}
                 />
                 :
                 <Initial
@@ -122,6 +131,11 @@ function Socket() {
                     isHost={isHost}
                     isOwner={isOwner}
                     setIsOwner={setIsOwner}
+                    screenStream={screenStream}
+                    setScreenStream={setScreenStream}
+                    screenPeers={screenPeers}
+                    setScreenPeers={setScreenPeers}
+                    screenPeerRef={screenPeerRef}
                 />
             }
         </>

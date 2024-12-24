@@ -57,16 +57,19 @@ export default function SearchBar({
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_REST_URL}/vc/create-room`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
-          name: roomName,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_REST_URL}/vc/create-room`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            name: roomName,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(t("Failed to create room"));
@@ -89,7 +92,7 @@ export default function SearchBar({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "20px",
+        paddingTop: "20px",
       }}
     >
       <div
@@ -141,10 +144,17 @@ export default function SearchBar({
             color: "#fff",
             fontWeight: "bold",
             fontSize: "15px",
-            transition: "background-color 0.5s ease",
+            cursor: "pointer",
+            transition: "background 0.3s ease, transform 0.3s ease",
           }}
-          onMouseEnter={(e) => (e.target.style.background = "rgb(60, 120, 35)")}
-          onMouseLeave={(e) => (e.target.style.background = "rgb(75, 136, 43)")}
+          onMouseEnter={(e) => {
+            e.target.style.background = "rgb(60, 120, 35)";
+            e.target.style.transform = "scale(1.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "rgb(75, 136, 43)";
+            e.target.style.transform = "scale(1)";
+          }}
           onClick={() => setIsModalOpen(true)}
         >
           {t("+   New Room")}
@@ -221,6 +231,19 @@ export default function SearchBar({
                   color: "#000",
                   border: "1px solid #ddd",
                   borderRadius: "8px",
+                  cursor: "pointer",
+                  transition:
+                    "background 0.3s ease, color 0.3s ease, transform 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#f2f2f2";
+                  e.target.style.color = "#333";
+                  e.target.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#fff";
+                  e.target.style.color = "#000";
+                  e.target.style.transform = "scale(1)";
                 }}
               >
                 {t("Close")}
@@ -234,6 +257,16 @@ export default function SearchBar({
                   border: "none",
                   borderRadius: "8px",
                   fontWeight: "bold",
+                  cursor: "pointer",
+                  transition: "background 0.3s ease, transform 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "rgb(60, 120, 35)";
+                  e.target.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "rgb(75, 136, 43)";
+                  e.target.style.transform = "scale(1)";
                 }}
               >
                 {t("Create Room")}

@@ -7,10 +7,12 @@ import PrivateRoutes from "./PrivateRoutes";
 import VideoCall from "./components/Video Call/VideoCall";
 import VideoCallRoom from "./components/Video Call Room/Room";
 import Chat from "./components/Chat/Chat";
+import Recording from "./components/Recording/Recording";
 // import VideoConference from "./components/Video Metting Screen/VideoConference";
 // import BeepVideoCall from "./components/Video Metting Screen/BeepVideoCall";
 import Profile from "./components/Video Call/Profile";
 import './style.css'
+import Setting from "./components/Video Call/Setting";
 
 
 function App() {
@@ -23,7 +25,9 @@ function App() {
             <Route path="/vc" element={<VideoCall />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="setting" element={<Setting />} />
           </Route>
+          <Route path="/recording" element={<Recording />} />
           <Route path="/vc/room" element={<VideoCallRoom />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/meetingscreen" element={<VideoConference />} /> */}

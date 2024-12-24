@@ -5,7 +5,7 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom";
-import "./room.css";
+import "./RoomCard.css";
 import SearchBar from "./SearchBar";
 import RoomCard from "./RoomCard";
 
@@ -33,7 +33,7 @@ const VideoCall = () => {
         throw new Error(`Error fetching data: ${response.statusText}`);
       }
       const data = await response.json();
-      // console.log("Fetched Data:", data);
+      console.log("Fetched Data:", data);
       return data;
     } catch (error) {
       console.error("Error:", error.message);
@@ -48,6 +48,15 @@ const VideoCall = () => {
   const handleSignOut = () => {
     setSignOutMessage("You have been signed out.");
     navigate("/login");
+    localStorage.clear();
+    sessionStorage.clear();
+    document.cookie.split(";").forEach((cookie) => {
+      document.cookie =
+        cookie.trim().split("=")[0] +
+        "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;";
+    });
+
+    window.location.reload();
   };
 
   const fetchApiData = async () => {
@@ -59,22 +68,25 @@ const VideoCall = () => {
         return;
       }
 
-      const res = await fetch(`${process.env.REACT_APP_REST_URL}/vc/get-all-rooms`, {
-        method: "GET",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_REST_URL}/vc/get-all-rooms`,
+        {
+          method: "GET",
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
       const data = await res.json();
-      // console.log("API Response:", data); // Debugging
+      console.log("API Response:", data); // Debugging
       if (data.rooms) {
-        setIsLoading(false)
+        setIsLoading(false);
         setRooms(data.rooms);
       } else {
         console.warn("No 'rooms' key in API response");
@@ -106,9 +118,8 @@ const VideoCall = () => {
             className="logo-img"
             src="../../../Images/Logo.png"
             alt="beeplogo"
-            style={{ height: "50px", width: "100px" }}
+            style={{ height: "60px", width: "100px" }}
           />
-
           <div
             style={{
               display: "flex",
@@ -131,12 +142,24 @@ const VideoCall = () => {
                 color: activeTab === "Rooms" ? "#fff" : "#000",
                 cursor: "pointer",
                 outline: "none",
-                transition: "background-color 0.5s ease",
+                transition: "background-color 0.3s ease, transform 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== "Rooms") {
+                  e.target.style.background = "rgb(230, 230, 230)";
+                  e.target.style.transform = "scale(1.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== "Rooms") {
+                  e.target.style.background = "#fff";
+                  e.target.style.transform = "scale(1)";
+                }
               }}
             >
               Rooms
             </button>
-            <button
+            {/* <button
               onClick={() => handleTabClick("Recording")}
               style={{
                 padding: "8px 30px",
@@ -144,28 +167,54 @@ const VideoCall = () => {
                 borderRadius: "10px",
                 background:
                   activeTab === "Recording" ? "rgb(75, 136, 43)" : "#fff",
-                color: activeTab === "Rooms" ? "#000" : "#fff",
+                color: activeTab === "Recording" ? "#fff" : "#000",
                 cursor: "pointer",
                 outline: "none",
+                transition: "background-color 0.3s ease, transform 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== "Recording") {
+                  e.target.style.background = "rgb(230, 230, 230)";
+                  e.target.style.transform = "scale(1.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== "Recording") {
+                  e.target.style.background = "#fff";
+                  e.target.style.transform = "scale(1)";
+                }
               }}
             >
               Recording
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 window.location.href = "/chat";
               }}
               style={{
                 padding: "8px 30px",
+                border: "none",
+                borderRadius: "10px",
                 background:
                   activeTab === "Instant Messaging"
                     ? "rgb(75, 136, 43)"
                     : "#fff",
-                color: activeTab === "Rooms" ? "#000" : "#000",
-                border: "none",
-                borderRadius: "10px",
+                color: activeTab === "Instant Messaging" ? "#fff" : "#000",
                 cursor: "pointer",
                 outline: "none",
+                transition: "background-color 0.3s ease, transform 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== "Instant Messaging") {
+                  e.target.style.background = "rgb(230, 230, 230)";
+                  e.target.style.transform = "scale(1.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== "Instant Messaging") {
+                  e.target.style.background = "#fff";
+                  e.target.style.transform = "scale(1)";
+                }
               }}
             >
               Instant Messaging
@@ -196,17 +245,15 @@ const VideoCall = () => {
               }}
               onClick={toggleDropdown}
             >
-              <span
-                style={{
-                  display: "block",
-                  marginTop: "5px",
-                  textAlign: "center",
-                  fontSize: "14px",
-                  color: "#666",
-                }}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="#bfb8b8"
               >
-                ▼
-              </span>
+                <path d="M480-345 240-585l56-56 184 183 184-183 56 56-240 240Z" />
+              </svg>
             </div>
             {isDropdownOpen && (
               <ul
@@ -241,6 +288,7 @@ const VideoCall = () => {
                     padding: "5px 10px",
                     cursor: "pointer",
                     borderBottom: "1px solid #ddd",
+                    paddingBottom: "10px",
                   }}
                   onClick={() => alert("Settings clicked")}
                 >
@@ -254,15 +302,24 @@ const VideoCall = () => {
                     background: "rgb(75, 136, 43)",
                     borderRadius: "5px",
                     border: "none",
+                    transition: "background 0.3s ease, transform 0.2s ease",
                   }}
                   onClick={handleSignOut}
+                  onMouseOver={(e) => {
+                    e.target.style.background = "rgb(95, 156, 63)";
+                    e.target.style.transform = "scale(1.05)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = "rgb(75, 136, 43)";
+                    e.target.style.transform = "scale(1)";
+                  }}
                 >
                   Sign Out
                 </button>
               </ul>
             )}
             <img
-              style={{ borderRadius: "50px" }}
+              style={{ borderRadius: "10px" }}
               src={userData.imageUrl}
               alt="user"
             />
@@ -286,11 +343,23 @@ const VideoCall = () => {
           </div>
         )}
 
-        <SearchBar isLoading={isLoading} setIsLoading={setIsLoading} setRooms={setRooms} rooms={rooms} searchInput={searchInput} setSearchInput={setSearchInput} />
+        <SearchBar
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setRooms={setRooms}
+          rooms={rooms}
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+        />
 
         {activeTab === "Rooms" && (
-          <div style={{ paddingLeft: "20px" }}>
-            <RoomCard setRooms={setRooms} rooms={rooms} isLoading={isLoading} setIsLoading={setIsLoading} />
+          <div>
+            <RoomCard
+              setRooms={setRooms}
+              rooms={rooms}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
           </div>
         )}
 
