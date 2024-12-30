@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./Login.css"; // Ensure this file is properly linked for other styling
-import beeplogo from "../../assets/beepLogo.png";
 import AppContext from "../AppContext"; // Import the AppContext
 import { useNavigate } from "react-router-dom"; // Import navigate for routing
 
@@ -97,7 +96,7 @@ const Login = () => {
       <div style={loginCardStyle}>
         <img
           className="bg-logo"
-          src={beeplogo}
+          src=""
           alt="bg-img"
           style={{ marginBottom: "20px", maxWidth: "150px" }}
         />

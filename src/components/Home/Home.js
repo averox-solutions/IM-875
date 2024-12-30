@@ -101,7 +101,7 @@ export default function Home() {
             <div className="main-body">
                 <div className="home-body">
                     <div className="user-name-typing">
-                        <span className="user-name">Welcome to Beep,All in one Secure platefrom</span>
+                        <span className="user-name">Welcome to ,All in one Secure platefrom</span>
                     </div>
                     <button className="nav-buttons-im" onClick={handleInstantMessagingClick}>
                         <div className="button-icon-div">

@@ -369,7 +369,7 @@ const Chat = () => {
           <div className="placeholder">
             <div className="no-chat">
               <img
-                src="https://averox.com/wp-content/uploads/2024/09/beep.png"
+                src=""
                 className="img-right"
                 alt=""
               />
