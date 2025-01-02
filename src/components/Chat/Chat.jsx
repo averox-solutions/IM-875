@@ -323,13 +323,13 @@ const Chat = () => {
                 <span className="name">{chatroom.participant.name}</span>
                 <div className="text-container">
                   <span className="last-message">
-                    {chatroom.lastMessage.message}
+                    {chatroom.lastMessage?.message ?? "No messages"}
                   </span>
                 </div>
               </div>
             </div>
             <div className="time">
-              <span>{chatroom.lastMessage.sentAt}</span>
+              <span>{chatroom.lastMessage?.sentAt ?? ""}</span>
             </div>
           </div>
         ))

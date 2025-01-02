@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppContext from '../AppContext';
 import "./Home.css";
-import VCImg from '../../assets/vc.webp'
 
 export default function Home() {
     const navigate = useNavigate();
@@ -15,7 +14,7 @@ export default function Home() {
         try {
             if (hasFetched) return;  // Prevent multiple fetch calls
 
-            const apiUrl = `${process.env.REACT_APP_REST_URL}/im/user-data`;
+            const apiUrl = `${process.env.REACT_APP_REST_URL}/im/users/user-data`;
             const response = await fetch(apiUrl, {
                 headers: {
                     Accept: 'application/json',
@@ -76,7 +75,6 @@ export default function Home() {
             <div className="home-header">
                 <div className="inner-header-div">
                     <div className="home-logo-div">
-                        <img className="home-logo" src="./images/beep.svg" alt="Logo" />
                     </div>
                     <div className="user-logo-div">
                         <img
@@ -101,11 +99,10 @@ export default function Home() {
             <div className="main-body">
                 <div className="home-body">
                     <div className="user-name-typing">
-                        <span className="user-name">Welcome to ,All in one Secure platefrom</span>
+                        <span className="user-name"></span>
                     </div>
                     <button className="nav-buttons-im" onClick={handleInstantMessagingClick}>
                         <div className="button-icon-div">
-                            <img className="button-icon" src="/images/Im.jpg" alt="im" />
                         </div>
                         <div className="button-text-container">
                             <div className="title-div">
@@ -123,7 +120,6 @@ export default function Home() {
                     </button>
                     <button className="nav-buttons" style={{ gap: "20px" }}>
                         <div className="button-icon-div">
-                            <img className="button-icon" src={VCImg} alt="VC" />
                         </div>
                         <div className="button-text-container">
                             <div className="title-div">
@@ -134,7 +130,6 @@ export default function Home() {
                             </div>
                             <div className="bottom-button">
                                 <button className="share">
-                                    <img className='btm-btn-icon' src="/images/send.svg" alt="" />
                                 </button>
                             </div>
                         </div>

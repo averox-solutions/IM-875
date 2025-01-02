@@ -29,7 +29,6 @@ const Login = () => {
   };
 
   const backgroundStyle = {
-    backgroundImage: `url(${require("../../assets/bg-image.png")})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",

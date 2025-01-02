@@ -5,6 +5,7 @@
 
 :root {
     --btn-primary: #40916c;
+    --btn-primary-light: #cbcbcb;
     --btn-primary-hover: #377f5e;
 
     --mute-btn: rgb(234, 67, 54);
